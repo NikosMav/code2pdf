@@ -1,0 +1,58 @@
+{
+  "github": {
+    "cache_duration_hours": 2,
+    "max_repos": 15,
+    "include_forks": false,
+    "include_private": false
+  },
+  "cv": {
+    "include_contact_info": true,
+    "include_stats_table": true,
+    "include_insights": true,
+    "max_featured_repos": 10,
+    "activity_threshold_days": 90
+  },
+  "output": {
+    "default_format": "pdf",
+    "filename_template": "{username}_professional_cv",
+    "include_timestamp": true
+  },
+  "themes": {
+    "professional": {
+      "colors": {
+        "primary": "#2563eb",
+        "secondary": "#64748b",  
+        "accent": "#059669"
+      },
+      "fonts": {
+        "body": "system-ui, -apple-system, sans-serif",
+        "heading": "system-ui, -apple-system, sans-serif",
+        "mono": "ui-monospace, 'Cascadia Code', consolas, monospace"
+      }
+    },
+    "modern": {
+      "colors": {
+        "primary": "#7c3aed",
+        "secondary": "#6b7280",
+        "accent": "#f59e0b"
+      },
+      "fonts": {
+        "body": "'Inter', system-ui, sans-serif",
+        "heading": "'Inter', system-ui, sans-serif",
+        "mono": "'JetBrains Mono', ui-monospace, monospace"
+      }
+    },
+    "minimal": {
+      "colors": {
+        "primary": "#374151",
+        "secondary": "#9ca3af",
+        "accent": "#111827"
+      },
+      "fonts": {
+        "body": "Georgia, 'Times New Roman', serif",
+        "heading": "Georgia, 'Times New Roman', serif",
+        "mono": "'Courier New', monospace"
+      }
+    }
+  }
+} 

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nikos Mavrapidis - CV</title>
+    <meta
+      name="description"
+      content="Professional CV for Nikos Mavrapidis generated from GitHub profile"
+    />
+    <meta name="author" content="Nikos Mavrapidis" />
+
+    <style>
+      /* Professional Theme - Default CSS Styles */
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #64748b;
+    --accent-color: #059669;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-white: #ffffff;
+    --bg-gray: #f8fafc;
+    --border-color: #e5e7eb;
+    --font-body: system-ui, -apple-system, sans-serif;
+    --font-heading: system-ui, -apple-system, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Code', consolas, monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    font-size: 16px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--bg-white);
+}
+
+/* Print styles */
+@media print {
+    .container {
+        padding: 1rem;
+        box-shadow: none;
+    }
+    
+    .cv-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        font-size: 12px;
+        text-align: center;
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+/* Typography */
+h1 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+h2 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+h3 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 1.5rem 0 0.5rem 0;
+}
+
+h4 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin: 1rem 0 0.5rem 0;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+/* Lists */
+ul, ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+li {
+    margin-bottom: 0.25rem;
+}
+
+/* Code and pre */
+code {
+    font-family: var(--font-mono);
+    background-color: var(--bg-gray);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+    color: var(--text-dark);
+}
+
+pre {
+    font-family: var(--font-mono);
+    background-color: var(--bg-gray);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+}
+
+th {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+tr:nth-child(even) {
+    background-color: var(--bg-gray);
+}
+
+tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* Horizontal rules */
+hr {
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0;
+}
+
+/* Blockquotes */
+blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: var(--secondary-color);
+}
+
+/* Contact section */
+.contact-info {
+    background-color: var(--bg-gray);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.status-active {
+    background-color: #10b981;
+    color: white;
+}
+
+.status-recent {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.status-stable {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* Activity indicators */
+.activity-high {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.activity-medium {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.activity-low {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+/* Repository cards */
+.repo-card {
+    background-color: var(--bg-gray);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    transition: box-shadow 0.2s ease;
+}
+
+.repo-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.repo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.repo-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+.repo-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Professional summary section */
+.professional-summary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
+
+.professional-summary h2 {
+    color: white;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+/* Metrics grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.metric-card {
+    background-color: var(--bg-gray);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+/* Language tags */
+.language-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.language-tag {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Footer */
+.cv-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    th, td {
+        padding: 0.5rem;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .repo-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+} 
+    </style>
+  </head>
+  <body class="theme-professional">
+    <div class="container">
+      <h1 id="nikos-mavrapidis">Nikos Mavrapidis</h1>
+<p><em>JavaScript Developer with 7.7 years on GitHub</em>
+<strong>Softcom International</strong>📍 Athens, Greece</p>
+<hr />
+<h2 id="contact-links">📞 Contact &amp; Links</h2>
+<ul>
+<li><strong>GitHub:</strong> <a href="https://github.com/NikosMav">github.com/NikosMav</a> (8 followers, 11 following)</li>
+<li><strong>Website:</strong> <a href="https://nikosmav.github.io/nikosmav-react/">https://nikosmav.github.io/nikosmav-react/</a></li>
+</ul>
+<hr />
+<h2 id="professional-summary">📊 Professional Summary</h2>
+<p><strong>Activity Score:</strong> 22/100 | <strong>Impact Level:</strong> Low | <strong>Recent Activity:</strong> High</p>
+<ul>
+<li><strong>7.7 years</strong> of experience on GitHub since 2017</li>
+<li><strong>15 original repositories</strong> with <strong>9 total stars</strong> earned</li>
+<li><strong>6 programming languages</strong> in portfolio</li>
+<li><strong>3 projects</strong> actively maintained (updated in last 90 days)</li>
+<li>Average <strong>0.6 stars per repository</strong></li>
+</ul>
+<hr />
+<h2 id="technical-expertise">💻 Technical Expertise</h2>
+<h3 id="programming-languages-proficiency">Programming Languages &amp; Proficiency</h3>
+<p><strong>Jupyter Notebook</strong> - Intermediate<br />
+<strong>JavaScript</strong> - Intermediate<br />
+<strong>HTML</strong> - Beginner<br />
+<strong>Python</strong> - Beginner<br />
+<strong>C++</strong> - Intermediate<br />
+<strong>Java</strong> - Beginner  </p>
+<h3 id="technology-stack-insights">Technology Stack Insights</h3>
+<ul>
+<li><strong>Primary Language:</strong> JavaScript (4 projects)</li>
+<li><strong>Language Diversity:</strong> 6 different technologies</li>
+<li><strong>Most Popular Projects:</strong> Jupyter Notebook ecosystem</li>
+</ul>
+<hr />
+<h2 id="featured-projects">🚀 Featured Projects</h2>
+<h3 id="dataanalysis-netflix-jupyter-notebook"><a href="https://github.com/NikosMav/DataAnalysis-Netflix">DataAnalysis-Netflix</a> ·Jupyter Notebook</h3>
+<p>A notebook for movie and TV show recommendations using Boolean and TF-IDF methods. Get personalized suggestions based on text descriptions and choose the method that suits your preferences.
+<strong>Impact:</strong> ⭐ 5 stars · 🍴 4 forks · 👀 5 watchers<br />
+<strong>Activity:</strong> 🔵 Stable (updated 487 days ago) · <strong>Tags:</strong> ai-techniques, data-analysis, data-visualization, netflix-dataset, neural-networks<strong>License:</strong> MIT License</p>
+<h3 id="fakenews-classification-jupyter-notebook"><a href="https://github.com/NikosMav/FakeNews-Classification">FakeNews-Classification</a> ·Jupyter Notebook</h3>
+<p>In this notebook we analyze and classify news articles using machine learning techniques, including Logistic Regression, Naive Bayes, Support Vector Machines, and Random Forests. Explore text vectorization and NLP for accurate news categorization.
+<strong>Impact:</strong> ⭐ 2 stars · 🍴 0 forks · 👀 2 watchers<br />
+<strong>Activity:</strong> 🔵 Stable (updated 103 days ago) · <strong>Tags:</strong> fake-news-dataset, fake-news-detection, model-training, neural-networks, python-notebook<strong>License:</strong> MIT License</p>
+<h3 id="ubiquitous-computinggithubio-javascript"><a href="https://github.com/NikosMav/ubiquitous-computing.github.io">ubiquitous-computing.github.io</a> ·JavaScript</h3>
+<p>Thesis Project on Ubiquitous Computing. Hosted by Museum of IT 🎓 
+<strong>Impact:</strong> ⭐ 1 stars · 🍴 0 forks · 👀 1 watchers<br />
+<strong>Activity:</strong> 🔵 Stable (updated 260 days ago) · <strong>Tags:</strong> backend, face-api, frontend, handtrackjs, html-css<strong>License:</strong> MIT License</p>
+<h3 id="worthifys-site-javascript"><a href="https://github.com/NikosMav/worthifys-site">worthifys-site</a> ·JavaScript</h3>
+<p><em>Professional JavaScript project</em>
+<strong>Impact:</strong> ⭐ 1 stars · 🍴 0 forks · 👀 1 watchers<br />
+<strong>Activity:</strong> 🔵 Stable (updated 497 days ago)</p>
+<h3 id="nikosmav"><a href="https://github.com/NikosMav/NikosMav">NikosMav</a></h3>
+<p>Config files for my GitHub profile.
+<strong>Impact:</strong> ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers<br />
+<strong>Activity:</strong> 🟢 Active (updated 20 days ago) · <strong>Tags:</strong> config, github-config</p>
+<h3 id="nikosmavgithubio-html"><a href="https://github.com/NikosMav/NikosMav.github.io">NikosMav.github.io</a> ·HTML</h3>
+<p>Personal website 🌐
+<strong>Impact:</strong> ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers<br />
+<strong>Activity:</strong> 🟢 Active (updated 22 days ago)<strong>License:</strong> MIT License</p>
+<h3 id="maritime_optimization-python"><a href="https://github.com/NikosMav/maritime_optimization">maritime_optimization</a> ·Python</h3>
+<p><em>Professional Python project</em>
+<strong>Impact:</strong> ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers<br />
+<strong>Activity:</strong> 🔵 Stable (updated 193 days ago)</p>
+<h3 id="graphics-opengl-phong-c"><a href="https://github.com/NikosMav/Graphics-Opengl-Phong">Graphics-Opengl-Phong</a> ·C++</h3>
+<p><em>Professional C++ project</em>
+<strong>Impact:</strong> ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers<br />
+<strong>Activity:</strong> 🔵 Stable (updated 542 days ago) · <strong>Tags:</strong> cpp, graphics-programming, opengl, phong-lighting</p>
+<hr />
+<h2 id="development-insights">📈 Development Insights</h2>
+<h3 id="contribution-patterns">Contribution Patterns</h3>
+<ul>
+<li><strong>Repository Impact:</strong> Low (9 stars across 15 repositories)</li>
+<li><strong>Community Engagement:</strong> 0.44x fork-to-star ratio indicates high collaboration</li>
+<li><strong>Development Activity:</strong> High (3/15 repositories recently active)</li>
+</ul>
+<h3 id="professional-indicators">Professional Indicators</h3>
+<ul>
+<li><strong>Code Volume:</strong> ~456MB of code across all repositories</li>
+<li><strong>Project Maintenance:</strong> Excellent ongoing project maintenance</li>
+<li><strong>Documentation Quality:</strong> 87% of projects include documentation</li>
+<li><strong>Open Source Commitment:</strong> 15 public repositories demonstrate transparency</li>
+</ul>
+<hr />
+<h2 id="github-statistics">🏆 GitHub Statistics</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>Industry Insight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account Age</strong></td>
+<td>7.7 years</td>
+<td>Experienced developer</td>
+</tr>
+<tr>
+<td><strong>Public Repositories</strong></td>
+<td>30</td>
+<td>Very active</td>
+</tr>
+<tr>
+<td><strong>Community Reach</strong></td>
+<td>8 followers</td>
+<td>Building network</td>
+</tr>
+<tr>
+<td><strong>Total Stars Earned</strong></td>
+<td>9</td>
+<td>Developing portfolio</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>This data-driven CV was generated from NikosMav's GitHub profile using <a href="https://github.com/your-username/code2pdf">code2pdf</a></em></p>
+
+      <footer class="cv-footer">
+        <p>
+          Generated on 2025-06-22 using
+          <a href="https://github.com/nikosmav/code2pdf">code2pdf</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

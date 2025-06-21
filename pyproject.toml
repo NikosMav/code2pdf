@@ -4,7 +4,7 @@ requires = ["setuptools", "wheel"]
 [project]
 name = "code2pdf"
 version = "0.0.1"
-description = "Generate a markdown CV directly from a GitHub profile"
+description = "Generate professional CVs from GitHub profiles with multiple output formats"
 authors = [{name="Nikos Mavridis"}]
 readme = "README.md"
 license = {text = "MIT"}
@@ -12,7 +12,40 @@ dependencies = [
     "typer>=0.7",
     "PyGithub>=2.3",
     "Jinja2>=3.1",
+    "markdown>=3.5",
+    "pygments>=2.16",
+    "aiohttp>=3.9",
+    "aiofiles>=23.2",
 ]
 
 [project.scripts]
 code2pdf = "code2pdf.cli:app"
+
+[project.optional-dependencies]
+# PDF generation support (requires system libraries)
+pdf = [
+    "weasyprint>=61.0",
+]
+
+# YAML configuration support
+yaml = [
+    "PyYAML>=6.0",
+]
+
+# All optional features
+all = [
+    "weasyprint>=61.0",
+    "PyYAML>=6.0",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.21",
+    "pytest-cov>=4.1",
+    "black>=23.0",
+    "ruff>=0.1",
+    "mypy>=1.6",
+    "types-markdown>=3.5",
+    "types-PyYAML>=6.0",
+]

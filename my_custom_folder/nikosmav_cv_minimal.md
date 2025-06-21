@@ -1,6 +1,6 @@
 # Nikos Mavrapidis
 
-_Jupyter Notebook Developer with 7.7 years on GitHub_
+_JavaScript Developer with 7.7 years on GitHub_
 **Softcom International**📍 Athens, Greece
 ---
 
@@ -12,13 +12,13 @@ _Jupyter Notebook Developer with 7.7 years on GitHub_
 
 ## 📊 Professional Summary
 
-**Activity Score:** 26/100 | **Impact Level:** Low | **Recent Activity:** Low
+**Activity Score:** 22/100 | **Impact Level:** Low | **Recent Activity:** High
 
 - **7.7 years** of experience on GitHub since 2017
-- **10 original repositories** with **7 total stars** earned
-- **5 programming languages** in portfolio
-- **0 projects** actively maintained (updated in last 90 days)
-- Average **0.7 stars per repository**
+- **15 original repositories** with **9 total stars** earned
+- **6 programming languages** in portfolio
+- **3 projects** actively maintained (updated in last 90 days)
+- Average **0.6 stars per repository**
 
 ---
 
@@ -26,16 +26,17 @@ _Jupyter Notebook Developer with 7.7 years on GitHub_
 
 ### Programming Languages & Proficiency
 
-**Jupyter Notebook** - Advanced  
-**C++** - Beginner  
+**Jupyter Notebook** - Intermediate  
+**JavaScript** - Intermediate  
+**HTML** - Beginner  
 **Python** - Beginner  
-**Java** - Intermediate  
-**C** - Advanced  
+**C++** - Intermediate  
+**Java** - Beginner  
 
 ### Technology Stack Insights
 
-- **Primary Language:** Jupyter Notebook (3 projects)
-- **Language Diversity:** 5 different technologies
+- **Primary Language:** JavaScript (4 projects)
+- **Language Diversity:** 6 different technologies
 - **Most Popular Projects:** Jupyter Notebook ecosystem
 
 ---
@@ -46,42 +47,42 @@ _Jupyter Notebook Developer with 7.7 years on GitHub_
 ### [DataAnalysis-Netflix](https://github.com/NikosMav/DataAnalysis-Netflix) ·Jupyter Notebook
 A notebook for movie and TV show recommendations using Boolean and TF-IDF methods. Get personalized suggestions based on text descriptions and choose the method that suits your preferences.
 **Impact:** ⭐ 5 stars · 🍴 4 forks · 👀 5 watchers  
-**Activity:** 🔵 Stable (updated 487 days ago)**License:** MIT License
+**Activity:** 🔵 Stable (updated 487 days ago) · **Tags:** ai-techniques, data-analysis, data-visualization, netflix-dataset, neural-networks**License:** MIT License
 
 ### [FakeNews-Classification](https://github.com/NikosMav/FakeNews-Classification) ·Jupyter Notebook
 In this notebook we analyze and classify news articles using machine learning techniques, including Logistic Regression, Naive Bayes, Support Vector Machines, and Random Forests. Explore text vectorization and NLP for accurate news categorization.
 **Impact:** ⭐ 2 stars · 🍴 0 forks · 👀 2 watchers  
-**Activity:** 🔵 Stable (updated 103 days ago)**License:** MIT License
+**Activity:** 🔵 Stable (updated 103 days ago) · **Tags:** fake-news-dataset, fake-news-detection, model-training, neural-networks, python-notebook**License:** MIT License
 
-### [ApproximateVectorSearch-and-Clusterization](https://github.com/NikosMav/ApproximateVectorSearch-and-Clusterization) ·C++
-_Professional C++ project_
+### [ubiquitous-computing.github.io](https://github.com/NikosMav/ubiquitous-computing.github.io) ·JavaScript
+Thesis Project on Ubiquitous Computing. Hosted by Museum of IT 🎓 
+**Impact:** ⭐ 1 stars · 🍴 0 forks · 👀 1 watchers  
+**Activity:** 🔵 Stable (updated 260 days ago) · **Tags:** backend, face-api, frontend, handtrackjs, html-css**License:** MIT License
+
+### [worthifys-site](https://github.com/NikosMav/worthifys-site) ·JavaScript
+_Professional JavaScript project_
+**Impact:** ⭐ 1 stars · 🍴 0 forks · 👀 1 watchers  
+**Activity:** 🔵 Stable (updated 497 days ago)
+
+### [NikosMav](https://github.com/NikosMav/NikosMav) 
+Config files for my GitHub profile.
 **Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
-**Activity:** 🔵 Stable (updated 1079 days ago)
+**Activity:** 🟢 Active (updated 20 days ago) · **Tags:** config, github-config
 
-### [Berkley-Pacman-Projects](https://github.com/NikosMav/Berkley-Pacman-Projects) ·Python
+### [NikosMav.github.io](https://github.com/NikosMav/NikosMav.github.io) ·HTML
+Personal website 🌐
+**Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
+**Activity:** 🟢 Active (updated 22 days ago)**License:** MIT License
+
+### [maritime_optimization](https://github.com/NikosMav/maritime_optimization) ·Python
 _Professional Python project_
 **Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
-**Activity:** 🔵 Stable (updated 1079 days ago)
+**Activity:** 🔵 Stable (updated 193 days ago)
 
-### [Compilers-1](https://github.com/NikosMav/Compilers-1) ·Java
-A compiler construction project for the "Κ31 Compilers" course at DiT, NKUA. This repository hosts a Java application designed to parse and evaluate expressions based on a defined grammar for a subset of a programming language. It includes a lexer and parser to handle expressions, perform calculations, and construct a syntax tree.
+### [Graphics-Opengl-Phong](https://github.com/NikosMav/Graphics-Opengl-Phong) ·C++
+_Professional C++ project_
 **Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
-**Activity:** 🔵 Stable (updated 591 days ago)
-
-### [Compilers-2](https://github.com/NikosMav/Compilers-2) ·Java
-A Java-based compiler functionality project for the "Κ31 Compilers" course at DiT, NKUA. It generates a Symbol Table and performs semantic checks on MiniJava programs. It involves visitor patterns for class/type extraction, field/method aggregation, and extensive semantic analysis within method bodies.
-**Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
-**Activity:** 🔵 Stable (updated 592 days ago)
-
-### [Coursera-Data-Visualization](https://github.com/NikosMav/Coursera-Data-Visualization) ·Jupyter Notebook
-_Professional Jupyter Notebook project_
-**Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
-**Activity:** 🔵 Stable (updated 592 days ago)
-
-### [Database-Systems-1](https://github.com/NikosMav/Database-Systems-1) ·C
-_Professional C project_
-**Impact:** ⭐ 0 stars · 🍴 0 forks · 👀 0 watchers  
-**Activity:** 🔵 Stable (updated 1079 days ago)
+**Activity:** 🔵 Stable (updated 542 days ago) · **Tags:** cpp, graphics-programming, opengl, phong-lighting
 
 ---
 
@@ -89,17 +90,17 @@ _Professional C project_
 
 ### Contribution Patterns
 
-- **Repository Impact:** Low (7 stars across 10 repositories)
-- **Community Engagement:** 0.57x fork-to-star ratio indicates high collaboration
-- **Development Activity:** Low (0/10 repositories recently active)
+- **Repository Impact:** Low (9 stars across 15 repositories)
+- **Community Engagement:** 0.44x fork-to-star ratio indicates high collaboration
+- **Development Activity:** High (3/15 repositories recently active)
 
 ### Professional Indicators
 
 
-- **Code Volume:** ~9MB of code across all repositories
-- **Project Maintenance:** Selective ongoing project maintenance
-- **Documentation Quality:** 100% of projects include documentation
-- **Open Source Commitment:** 10 public repositories demonstrate transparency
+- **Code Volume:** ~456MB of code across all repositories
+- **Project Maintenance:** Excellent ongoing project maintenance
+- **Documentation Quality:** 87% of projects include documentation
+- **Open Source Commitment:** 15 public repositories demonstrate transparency
 
 ---
 
@@ -110,7 +111,7 @@ _Professional C project_
 | **Account Age**         | 7.7 years                  | Experienced developer                                                                                                                     |
 | **Public Repositories** | 30                             | Very active                                                                                       |
 | **Community Reach**     | 8 followers                      | Building network                                                                                            |
-| **Total Stars Earned**  | 7 | Developing portfolio |
+| **Total Stars Earned**  | 9 | Developing portfolio |
 
 ---
 
