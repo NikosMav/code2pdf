@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project]
+name = "code2pdf"
+version = "0.0.1"
+description = "Generate a markdown CV directly from a GitHub profile"
+authors = [{name="Nikos Mavridis"}]
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "typer>=0.7",
+    "PyGithub>=2.3",
+    "Jinja2>=3.1",
+]
+
+[project.scripts]
+code2pdf = "code2pdf.cli:app"

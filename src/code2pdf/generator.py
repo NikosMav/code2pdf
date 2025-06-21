@@ -1,12 +1,10 @@
 """
-Render LaTeX template and compile PDF.
+Render Markdown CV template.
 """
 from __future__ import annotations
-import subprocess
-import tempfile
 from pathlib import Path
 
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader
 
 env = Environment(
     loader=PackageLoader("code2pdf", "template"),
@@ -16,19 +14,9 @@ env = Environment(
 )
 
 
-def render_pdf(context: dict, output_path: Path):
-    template = env.get_template("resume.tex")
-    tex_source = template.render(**context)
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_tex = Path(tmpdir) / "resume.tex"
-        tmp_tex.write_text(tex_source, encoding="utf-8")
-        subprocess.run(
-            ["latexmk", "-pdf", "-interaction=nonstopmode", tmp_tex.name],
-            cwd=tmpdir,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        final_pdf = Path(tmpdir) / "resume.pdf"
-        final_pdf.replace(output_path)
+def render_markdown(context: dict, output_path: Path):
+    """Generate a markdown CV from GitHub profile data."""
+    template = env.get_template("resume.md")
+    markdown_content = template.render(**context)
+    
+    output_path.write_text(markdown_content, encoding="utf-8")
