@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import asyncio
 from urllib.parse import urlparse
+from types import ModuleType
 
 # Check for aiofiles availability
 try:
@@ -16,7 +17,7 @@ try:
     AIOFILES_AVAILABLE = True
 except ImportError:
     AIOFILES_AVAILABLE = False
-    aiofiles = None
+    aiofiles = None  # type: ignore
 
 # Cache configuration
 WEBSITE_CACHE_DIR = Path.home() / ".cache" / "code2pdf" / "websites"
@@ -370,7 +371,7 @@ def process_scraped_data(
     scraped_data: Dict[str, Any], url: str, verbose: bool = False
 ) -> Dict[str, Any]:
     """Process and normalize scraped website data."""
-    processed = {
+    processed: Dict[str, Any] = {
         "url": url,
         "scraped_at": datetime.now().isoformat(),
         "content": {
@@ -406,21 +407,27 @@ def process_scraped_data(
     # Analyze content for additional insights
     markdown_content = scraped_data.get("markdown", "").lower()
 
+    # Ensure insights is properly initialized as a mutable dict
+    if "insights" not in processed:
+        processed["insights"] = {}
+    
+    insights_dict: Dict[str, Any] = processed["insights"]
+
     # Detect website type
     if any(
         keyword in markdown_content
         for keyword in ["portfolio", "resume", "cv", "about me"]
     ):
-        processed["insights"]["website_type"] = "personal_portfolio"
+        insights_dict["website_type"] = "personal_portfolio"
     elif any(keyword in markdown_content for keyword in ["blog", "articles", "posts"]):
-        processed["insights"]["website_type"] = "blog"
+        insights_dict["website_type"] = "blog"
     elif any(
         keyword in markdown_content
         for keyword in ["freelance", "services", "hire", "consulting"]
     ):
-        processed["insights"]["website_type"] = "professional_services"
+        insights_dict["website_type"] = "professional_services"
     else:
-        processed["insights"]["website_type"] = "general"
+        insights_dict["website_type"] = "general"
 
     # Extract key technologies mentioned
     tech_keywords = [
@@ -456,7 +463,7 @@ def process_scraped_data(
 
     found_technologies = [tech for tech in tech_keywords if tech in markdown_content]
     if found_technologies:
-        processed["insights"]["technologies_mentioned"] = found_technologies
+        insights_dict["technologies_mentioned"] = found_technologies
 
     if verbose:
         print(f"✅ Processed website data from {url}")
@@ -537,7 +544,7 @@ def generate_enrichment_summary(
     website_data_list: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
     """Generate a summary of insights from all crawled websites."""
-    summary = {
+    summary: Dict[str, Any] = {
         "websites_crawled": len(website_data_list),
         "combined_insights": {
             "additional_skills": set(),
@@ -553,60 +560,59 @@ def generate_enrichment_summary(
     }
 
     for website_data in website_data_list:
-        insights = website_data.get("insights", {})
+        insights: Dict[str, Any] = website_data.get("insights", {})
 
         # Collect website types
-        if insights.get("website_type"):
-            summary["combined_insights"]["website_types"].append(
-                insights["website_type"]
-            )
+        website_type = insights.get("website_type")
+        if website_type:
+            summary["combined_insights"]["website_types"].append(website_type)
 
         # Collect technologies
-        if insights.get("technologies_mentioned"):
+        technologies_mentioned = insights.get("technologies_mentioned")
+        if technologies_mentioned:
             summary["combined_insights"]["technologies_mentioned"].update(
-                insights["technologies_mentioned"]
+                technologies_mentioned
             )
 
         # Collect professional information
-        professional = insights.get("professional", {})
-        if professional.get("skills"):
-            summary["combined_insights"]["additional_skills"].update(
-                professional["skills"]
-            )
-        if professional.get("technologies"):
-            summary["combined_insights"]["additional_technologies"].update(
-                professional["technologies"]
-            )
-        if professional.get("experience"):
-            summary["combined_insights"]["additional_experience"].extend(
-                professional["experience"]
-            )
-        if professional.get("projects"):
-            summary["combined_insights"]["additional_projects"].extend(
-                professional["projects"]
-            )
-        if professional.get("services"):
-            summary["combined_insights"]["professional_services"].extend(
-                professional["services"]
-            )
+        professional: Dict[str, Any] = insights.get("professional", {})
+        
+        skills = professional.get("skills")
+        if skills:
+            summary["combined_insights"]["additional_skills"].update(skills)
+            
+        technologies = professional.get("technologies")
+        if technologies:
+            summary["combined_insights"]["additional_technologies"].update(technologies)
+            
+        experience = professional.get("experience")
+        if experience:
+            summary["combined_insights"]["additional_experience"].extend(experience)
+            
+        projects = professional.get("projects")
+        if projects:
+            summary["combined_insights"]["additional_projects"].extend(projects)
+            
+        services = professional.get("services")
+        if services:
+            summary["combined_insights"]["professional_services"].extend(services)
 
         # Collect personal information
-        personal = insights.get("personal_info", {})
-        if personal.get("bio"):
-            summary["combined_insights"]["bio_snippets"].append(personal["bio"])
-        if personal.get("contact"):
-            summary["combined_insights"]["contact_info"].update(personal["contact"])
+        personal: Dict[str, Any] = insights.get("personal_info", {})
+        
+        bio = personal.get("bio")
+        if bio:
+            summary["combined_insights"]["bio_snippets"].append(bio)
+            
+        contact = personal.get("contact")
+        if contact:
+            summary["combined_insights"]["contact_info"].update(contact)
 
     # Convert sets back to lists for JSON serialization
-    summary["combined_insights"]["additional_skills"] = list(
-        summary["combined_insights"]["additional_skills"]
-    )
-    summary["combined_insights"]["additional_technologies"] = list(
-        summary["combined_insights"]["additional_technologies"]
-    )
-    summary["combined_insights"]["technologies_mentioned"] = list(
-        summary["combined_insights"]["technologies_mentioned"]
-    )
+    combined_insights: Dict[str, Any] = summary["combined_insights"]
+    combined_insights["additional_skills"] = list(combined_insights["additional_skills"])
+    combined_insights["additional_technologies"] = list(combined_insights["additional_technologies"])
+    combined_insights["technologies_mentioned"] = list(combined_insights["technologies_mentioned"])
 
     return summary
 

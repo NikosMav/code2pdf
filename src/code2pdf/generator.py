@@ -185,7 +185,7 @@ def render_pdf(
 
     # Import WeasyPrint only when actually needed
     try:
-        import weasyprint
+        import weasyprint  # type: ignore
     except ImportError:
         raise RuntimeError("WeasyPrint is not available for PDF generation")
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Dict, Any, Optional
+from types import ModuleType
 
 # Optional YAML support
 try:
@@ -12,7 +13,7 @@ try:
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
-    yaml = None
+    yaml = None  # type: ignore
 
 DEFAULT_CONFIG = {
     "output": {

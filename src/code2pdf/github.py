@@ -74,10 +74,10 @@ def calculate_activity_score(repos: List[Dict]) -> int:
 
 def analyze_languages(repos: List[Dict]) -> Dict[str, Any]:
     """Enhanced programming language analysis with trends and specializations."""
-    lang_stats = Counter()
-    lang_projects = Counter()
-    lang_stars = Counter()
-    lang_sizes = Counter()
+    lang_stats: Counter[str] = Counter()
+    lang_projects: Counter[str] = Counter()
+    lang_stars: Counter[str] = Counter()
+    lang_sizes: Counter[str] = Counter()
 
     for repo in repos:
         if repo.get("language"):
@@ -179,8 +179,8 @@ def analyze_repository_trends(repos: List[Dict]) -> Dict[str, Any]:
         return {}
 
     # Group by creation year
-    creation_years = Counter()
-    update_months = Counter()
+    creation_years: Counter[int] = Counter()
+    update_months: Counter[str] = Counter()
 
     for repo in repos:
         if repo.get("created_at"):
@@ -246,14 +246,14 @@ def fetch_profile(
             print(f"👤 Fetching profile for {user.name or user.login}...")
 
         # Basic profile data
-        profile_data = {
+        profile_data: Dict[str, Any] = {
             "name": user.name or user.login,
             "username": user.login,
             "bio": user.bio,
             "location": user.location,
             "company": user.company,
             "blog": user.blog,
-            "twitter_username": user.twitter_username,
+            "twitter_username": getattr(user, 'twitter_username', None),
             "email": user.email,
             "public_repos": user.public_repos,
             "followers": user.followers,
@@ -330,8 +330,8 @@ def fetch_profile(
         profile_data["activity_score"] = calculate_activity_score(profile_data["repos"])
 
         # Featured repositories (top by stars, but ensure diversity)
-        featured_repos = []
-        seen_languages = set()
+        featured_repos: List[Dict[str, Any]] = []
+        seen_languages: set[str] = set()
 
         for repo in profile_data["repos"]:
             if len(featured_repos) >= 8:
