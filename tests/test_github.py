@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime, timezone
 
-from code2pdf.github import (
+from github_scraper.github import (
     calculate_activity_score,
     analyze_languages,
     analyze_contribution_patterns,
@@ -194,7 +194,7 @@ class TestRepositoryTrends:
         assert result["creation_trend"][2022] == 1
 
 
-@patch("code2pdf.github.Github")
+@patch("github_scraper.github.Github")
 class TestFetchProfile:
     """Test profile fetching functionality."""
 
@@ -247,7 +247,7 @@ class TestFetchProfile:
         mock_user.get_repos.return_value = [mock_repo]
 
         # Import and test the function (avoiding cache for testing)
-        from code2pdf.github import fetch_profile
+        from github_scraper.github import fetch_profile
 
         result = fetch_profile("testuser", use_cache=False)
 

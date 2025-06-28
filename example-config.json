@@ -13,7 +13,7 @@
     "activity_threshold_days": 90
   },
   "output": {
-    "default_format": "pdf",
+    "default_format": "html",
     "filename_template": "{username}_professional_cv",
     "include_timestamp": true
   },

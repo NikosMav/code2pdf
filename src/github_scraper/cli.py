@@ -5,7 +5,7 @@ from enum import Enum
 from datetime import datetime, timedelta
 
 from .github import fetch_profile
-from .generator import render_markdown, render_pdf, render_html, is_pdf_available
+from .generator import render_markdown, render_html
 from .config import load_config, DEFAULT_CONFIG
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
@@ -13,7 +13,6 @@ app = typer.Typer(add_completion=False, no_args_is_help=True)
 
 class OutputFormat(str, Enum):
     markdown = "markdown"
-    pdf = "pdf"
     html = "html"
     all = "all"
 
@@ -48,7 +47,7 @@ def build(
         None, "--output-dir", "-d", help="Output directory for generated files"
     ),
     format: OutputFormat = typer.Option(
-        OutputFormat.markdown, "--format", "-f", help="Output format"
+        OutputFormat.html, "--format", "-f", help="Output format"
     ),
     theme: TemplateTheme = typer.Option(
         TemplateTheme.professional, "--theme", "-t", help="CV template theme"
@@ -71,23 +70,9 @@ def build(
         False, "--verbose", "-v", help="Enable verbose output"
     ),
 ):
-    """Build a professional CV from a GitHub profile with multiple output formats."""
+    """Build a professional CV from a GitHub profile with HTML and Markdown output formats."""
 
     try:
-        # Check PDF availability and warn user if needed
-        if format in [OutputFormat.pdf, OutputFormat.all] and not is_pdf_available():
-            if format == OutputFormat.pdf:
-                typer.echo(
-                    "⚠️  PDF generation is not available on this system.", err=True
-                )
-                typer.echo("🔄 Switching to HTML format instead...", err=True)
-                format = OutputFormat.html
-            else:  # format == OutputFormat.all
-                typer.echo(
-                    "⚠️  PDF generation is not available. Will generate Markdown and HTML only.",
-                    err=True,
-                )
-
         # Load configuration
         config_data = load_config(config) if config else DEFAULT_CONFIG
 
@@ -137,25 +122,12 @@ def build(
                     "markdown": output_directory / f"{base_name}.md",
                     "html": output_directory / f"{base_name}.html",
                 }
-                if is_pdf_available():
-                    outputs["pdf"] = output_directory / f"{base_name}.pdf"
             else:
                 ext = "md" if format == OutputFormat.markdown else format.value
-                if format == OutputFormat.markdown and custom_filename.endswith(
-                    (".pdf", ".html")
-                ):
+                if format == OutputFormat.markdown and custom_filename.endswith(".html"):
                     # Auto-detect format from extension
-                    detected_format = custom_filename.split(".")[-1].lower()
-                    if detected_format == "pdf" and not is_pdf_available():
-                        typer.echo(
-                            "⚠️  PDF generation not available. Creating HTML file instead.",
-                            err=True,
-                        )
-                        ext = "html"
-                        format = OutputFormat.html
-                    else:
-                        ext = detected_format
-                        format = OutputFormat(detected_format)
+                    ext = "html"
+                    format = OutputFormat.html
                 outputs = {format.value: output_directory / f"{base_name}.{ext}"}
         else:
             # Default organized filenames
@@ -165,8 +137,6 @@ def build(
                     "markdown": output_directory / f"{base_name}.md",
                     "html": output_directory / f"{base_name}.html",
                 }
-                if is_pdf_available():
-                    outputs["pdf"] = output_directory / f"{base_name}.pdf"
             else:
                 ext = "md" if format == OutputFormat.markdown else format.value
                 outputs = {format.value: output_directory / f"{base_name}.{ext}"}
@@ -179,15 +149,6 @@ def build(
                     render_markdown(data, output_path, theme.value, config_data)
                 elif output_format == "html":
                     render_html(data, output_path, theme.value, config_data)
-                elif output_format == "pdf":
-                    if is_pdf_available():
-                        render_pdf(data, output_path, theme.value, config_data)
-                    else:
-                        typer.echo(
-                            f"⚠️  Skipping PDF generation for {output_path} (not available)",
-                            err=True,
-                        )
-                        continue
 
                 generated_files.append(output_path)
                 if verbose:
@@ -225,19 +186,10 @@ def build(
 @app.command()
 def config():
     """Show current configuration and setup help."""
-    # Check PDF availability first to avoid interrupting output
-    pdf_available = is_pdf_available()
-
-    typer.echo("🔧 code2pdf Configuration")
-    typer.echo("\n📁 Default output formats:")
-    typer.echo("  • markdown (.md) - Default, compatible with GitHub")
-    typer.echo("  • html (.html) - Styled HTML with CSS")
-
-    if pdf_available:
-        typer.echo("  • pdf (.pdf) - Print-ready PDF format ✅")
-    else:
-        typer.echo("  • pdf (.pdf) - Not available on this system ❌")
-        typer.echo("    💡 Install system dependencies to enable PDF generation")
+    typer.echo("🔧 GitHub Scraper Configuration")
+    typer.echo("\n📁 Available output formats:")
+    typer.echo("  • markdown (.md) - GitHub-compatible markdown")
+    typer.echo("  • html (.html) - Styled HTML with CSS (default)")
 
     typer.echo("\n📂 Output Organization:")
     typer.echo("  • Files are organized in generated_cvs/{username}_{date}/ folders")
@@ -252,23 +204,11 @@ def config():
     typer.echo("\n🔑 GitHub Token Setup:")
     typer.echo("  1. Visit: https://github.com/settings/tokens")
     typer.echo("  2. Generate a new token with 'public_repo' scope")
-    typer.echo("  3. Use: code2pdf build username --token YOUR_TOKEN")
+    typer.echo("  3. Use: github-scraper build username --token YOUR_TOKEN")
 
     typer.echo("\n📊 Rate Limits:")
     typer.echo("  • Without token: 60 requests/hour")
     typer.echo("  • With token: 5,000 requests/hour")
-
-    if not pdf_available:
-        typer.echo("\n📋 PDF Generation Setup:")
-        typer.echo("  Windows:")
-        typer.echo("    • Consider using WSL2 for better compatibility")
-        typer.echo("    • Or use HTML output and browser 'Print to PDF'")
-        typer.echo("  Ubuntu/Debian:")
-        typer.echo(
-            "    • sudo apt-get install libpango1.0-dev libharfbuzz-dev libffi-dev"
-        )
-        typer.echo("  macOS:")
-        typer.echo("    • brew install pango harfbuzz")
 
 
 @app.command()
@@ -333,9 +273,6 @@ def clean(
 @app.command()
 def doctor():
     """Check system dependencies and configuration."""
-    # Check availability first to avoid interrupting output
-    pdf_available = is_pdf_available()
-
     typer.echo("🔍 System Diagnostic")
     typer.echo("=" * 40)
 
@@ -361,13 +298,6 @@ def doctor():
         typer.echo("✅ Markdown: Available")
     else:
         typer.echo("❌ Markdown: Missing")
-
-    # Check optional dependencies
-    if pdf_available:
-        typer.echo("✅ PDF generation: Available")
-    else:
-        typer.echo("❌ PDF generation: Not available")
-        typer.echo("  💡 Run 'code2pdf config' for setup instructions")
 
     if importlib.util.find_spec("yaml"):
         typer.echo("✅ YAML config support: Available")

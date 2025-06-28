@@ -2,9 +2,9 @@
 requires = ["setuptools", "wheel"]
 
 [project]
-name = "code2pdf"
+name = "github-scraper"
 version = "0.0.1"
-description = "Generate professional CVs from GitHub profiles with multiple output formats"
+description = "Generate professional HTML CVs from GitHub profiles with comprehensive analytics"
 authors = [{name="Nikos Mavridis"}]
 readme = "README.md"
 license = {text = "MIT"}
@@ -20,14 +20,9 @@ dependencies = [
 ]
 
 [project.scripts]
-code2pdf = "code2pdf.cli:app"
+github-scraper = "github_scraper.cli:app"
 
 [project.optional-dependencies]
-# PDF generation support (requires system libraries)
-pdf = [
-    "weasyprint>=61.0",
-]
-
 # YAML configuration support
 yaml = [
     "PyYAML>=6.0",
@@ -35,7 +30,6 @@ yaml = [
 
 # All optional features
 all = [
-    "weasyprint>=61.0",
     "PyYAML>=6.0",
 ]
 

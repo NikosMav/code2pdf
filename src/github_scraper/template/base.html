@@ -12,18 +12,20 @@
     <meta name="author" content="{{ name }}" />
 
     <style>
-      /* CSS content injected via template */
-      {{ css }}
+      {{ css | safe }}
     </style>
   </head>
   <body class="theme-{{ theme }}">
     <div class="container">
-      {{ body }}
+      <main class="resume">{{ body | safe }}</main>
 
       <footer class="cv-footer">
+        <hr />
         <p>
           Generated on {{ generated_at[:10] }} using
-          <a href="https://github.com/nikosmav/code2pdf">code2pdf</a>
+          <a href="https://github.com/nikosmav/github-scraper"
+            >GitHub Scraper</a
+          >
         </p>
       </footer>
     </div>

@@ -14,14 +14,14 @@ import time
 # Add the src directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from code2pdf.github import fetch_profile
-from code2pdf.website_enrichment import (
+from github_scraper.github import fetch_profile
+from github_scraper.website_enrichment import (
     extract_urls_from_profile,
     sync_enrich_profile_with_websites,
     is_valid_personal_website,
 )
-from code2pdf.generator import render_markdown, render_html
-from code2pdf.config import DEFAULT_CONFIG
+from github_scraper.generator import render_markdown, render_html
+from github_scraper.config import DEFAULT_CONFIG
 
 
 def create_test_firecrawl_wrapper():
@@ -349,7 +349,7 @@ def generate_enhanced_cv_for_profile(
         return False
 
 
-def test_multiple_profiles(usernames: List[str]) -> Dict[str, Any]:
+def run_multiple_profiles_test(usernames: List[str]) -> Dict[str, Any]:
     """
     Test website enrichment with multiple GitHub profiles.
     """
@@ -497,7 +497,7 @@ def main():
     print(f"Target usernames: {', '.join(test_usernames)}")
 
     # Run comprehensive tests
-    results, stats = test_multiple_profiles(test_usernames)
+    results, stats = run_multiple_profiles_test(test_usernames)
 
     # Print summary
     print_comprehensive_summary(results, stats)

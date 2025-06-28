@@ -1,6 +1,6 @@
 # Documentation
 
-This folder contains comprehensive documentation for the code2pdf project and its website enrichment features.
+This folder contains comprehensive documentation for the github-scraper project and its website enrichment features.
 
 ## 📚 Documents
 
@@ -40,7 +40,7 @@ Detailed test results and validation report for the website enrichment system ac
 **For Developers:**
 
 - Review `MULTI_PROFILE_TEST_RESULTS.md` for validation data
-- Check implementation in `/src/code2pdf/`
+- Check implementation in `/src/github_scraper/`
 - See test suites in `/tests/`
 
 ## 🔗 Related Resources
@@ -48,7 +48,7 @@ Detailed test results and validation report for the website enrichment system ac
 - **Main README**: Project overview and installation
 - **Examples**: Demonstration scripts in `/examples`
 - **Tests**: Comprehensive test suites in `/tests`
-- **Source Code**: Implementation in `/src/code2pdf/`
+- **Source Code**: Implementation in `/src/github_scraper/`
 
 ## 📖 Architecture Overview
 

@@ -1,14 +1,13 @@
-# code2pdf
+# GitHub Scraper
 
-Generate professional CVs from GitHub profiles with comprehensive analytics and multiple output formats.
+Generate professional HTML CVs from GitHub profiles with comprehensive analytics.
 
 ## 🚀 Features
 
 ### **Enhanced Output Formats**
 
-- **📄 Markdown** - GitHub-compatible markdown (default)
-- **🌐 HTML** - Styled HTML with responsive design
-- **📋 PDF** - Print-ready PDF documents
+- **📄 Markdown** - GitHub-compatible markdown
+- **🌐 HTML** - Styled HTML with responsive design (default)
 - **🎨 Multiple Themes** - Professional, Modern, and Minimal designs
 
 ### **Data-Driven Insights**
@@ -24,7 +23,7 @@ Generate professional CVs from GitHub profiles with comprehensive analytics and 
 - **⚡ Intelligent Caching** - API response caching for faster subsequent runs
 - **🎛️ Configurable Options** - Extensive customization via config files
 - **🔄 Rate Limit Friendly** - Optimized API usage with GitHub token support
-- **📱 Responsive Design** - Mobile-friendly HTML/PDF outputs
+- **📱 Responsive Design** - Mobile-friendly HTML outputs
 - **🎯 Verbose Mode** - Detailed progress reporting
 
 ### **🌐 Website Enrichment (New!)**
@@ -42,95 +41,70 @@ Generate professional CVs from GitHub profiles with comprehensive analytics and 
 
 ```bash
 # Install from PyPI (recommended)
-pipx install code2pdf
+pipx install github-scraper
 
 # Or install with pip
-pip install code2pdf
+pip install github-scraper
 ```
 
 ### Full Installation (All Features)
 
 ```bash
 # Install with all optional features
-pipx install "code2pdf[all]"
+pipx install "github-scraper[all]"
 
 # Or with pip
-pip install "code2pdf[all]"
+pip install "github-scraper[all]"
 ```
 
 ### Optional Features
 
 ```bash
-# PDF generation support (requires system libraries)
-pip install "code2pdf[pdf]"
-
 # YAML configuration support
-pip install "code2pdf[yaml]"
+pip install "github-scraper[yaml]"
 ```
 
 ### Development Installation
 
 ```bash
-git clone https://github.com/nikosmav/code2pdf.git
-cd code2pdf
+git clone https://github.com/nikosmav/github-scraper.git
+cd github-scraper
 pip install -e ".[dev,all]"
 ```
-
-### System Dependencies for PDF Generation
-
-**Ubuntu/Debian:**
-
-```bash
-sudo apt-get install libpango1.0-dev libharfbuzz-dev libffi-dev libjpeg-dev libopenjp2-7-dev
-pip install "code2pdf[pdf]"
-```
-
-**macOS:**
-
-```bash
-brew install pango harfbuzz
-pip install "code2pdf[pdf]"
-```
-
-**Windows:**
-
-- PDF generation has compatibility issues on Windows
-- Use HTML output with "Print to PDF" in your browser
-- Or consider using WSL2 for better compatibility
 
 ## 🚀 Quick Start
 
 ### Basic Usage
 
 ```bash
-# Generate markdown CV (default) - creates organized folder
-code2pdf build nikosmav
+# Generate HTML CV (default) - creates organized folder
+github-scraper build nikosmav
 
-# Generate PDF with modern theme in organized folder
-code2pdf build nikosmav --format pdf --theme modern
+# Generate markdown with modern theme in organized folder
+github-scraper build nikosmav --format markdown --theme modern
 
 # Generate all formats in organized folder
-code2pdf build nikosmav --format all --theme professional
+github-scraper build nikosmav --format all --theme professional
 ```
 
 ### With GitHub Token (Recommended)
 
 ```bash
 # Higher rate limits and better data
-code2pdf build nikosmav --token YOUR_GITHUB_TOKEN --format pdf --verbose
+github-scraper build nikosmav --token YOUR_GITHUB_TOKEN --format html --verbose
 ```
 
 ### Advanced Usage
 
 ```bash
 # Custom output directory
-code2pdf build nikosmav --output-dir my_cvs --theme modern
+github-scraper build nikosmav --output-dir my_cvs --theme modern
 
 # Single file output (bypasses organization)
-code2pdf build nikosmav --output my_resume.html --theme minimal
+github-scraper build nikosmav --output my_resume.html --theme minimal
 
 # Disable caching
-code2pdf build nikosmav --no-cache --format html
+github-scraper build nikosmav --no-cache --format html
 ```
 
 ### 🌐 Website Enrichment
@@ -152,25 +126,24 @@ Get your free API key from [Firecrawl](https://firecrawl.dev/).
 
 ```bash
 # Generate CV with website enrichment (analyzes personal websites)
-code2pdf build nikosmav --enrich-websites --verbose
+github-scraper build nikosmav --enrich-websites --verbose
 
 # Enhanced CV with all formats
-code2pdf build nikosmav --enrich-websites --format all --theme modern
+github-scraper build nikosmav --enrich-websites --format all --theme modern
 
 # Website enrichment with custom output
-code2pdf build nikosmav --enrich-websites --output-dir enhanced_cvs
+github-scraper build nikosmav --enrich-websites --output-dir enhanced_cvs
 ```
 
 ### File Organization
 
-By default, `code2pdf` creates organized folders:
+By default, `github-scraper` creates organized folders:
 
 ```
 generated_cvs/
 ├── nikosmav_2024-01-15/
 │   ├── nikosmav_cv_professional.md
-│   ├── nikosmav_cv_professional.html
-│   └── nikosmav_cv_professional.pdf
+│   └── nikosmav_cv_professional.html
 └── johndoe_2024-01-16/
     ├── johndoe_cv_modern.md
     └── johndoe_cv_modern.html
@@ -187,22 +160,22 @@ generated_cvs/
 
 ```bash
 # Default: organized folder with date
-code2pdf build nikosmav
-# → generated_cvs/nikosmav_2024-01-15/nikosmav_cv_professional.md
+github-scraper build nikosmav
+# → generated_cvs/nikosmav_2024-01-15/nikosmav_cv_professional.html
 
 # Custom directory
-code2pdf build nikosmav --output-dir my_team_cvs
-# → my_team_cvs/nikosmav_cv_professional.md
+github-scraper build nikosmav --output-dir my_team_cvs
+# → my_team_cvs/nikosmav_cv_professional.html
 
 # Single file (bypasses organization)
-code2pdf build nikosmav --output john_resume.pdf
-# → john_resume.pdf (current directory)
+github-scraper build nikosmav --output john_resume.html
+# → john_resume.html (current directory)
 
 # Multiple users in same directory
-code2pdf build nikosmav --output-dir company_cvs
-code2pdf build johndoe --output-dir company_cvs
-# → company_cvs/nikosmav_cv_professional.md
-# → company_cvs/johndoe_cv_professional.md
+github-scraper build nikosmav --output-dir company_cvs
+github-scraper build johndoe --output-dir company_cvs
+# → company_cvs/nikosmav_cv_professional.html
+# → company_cvs/johndoe_cv_professional.html
 ```
 
 ## 🎨 Themes
@@ -227,7 +200,7 @@ code2pdf build johndoe --output-dir company_cvs
 
 ## ⚙️ Configuration
 
-Create a `code2pdf.json` or `code2pdf.yaml` file in your project directory or home folder:
+Create a `github-scraper.json` or `github-scraper.yaml` file in your project directory or home folder:
 
 ```json
 {
@@ -242,7 +215,7 @@ Create a `code2pdf.json` or `code2pdf.yaml` file in your project directory or ho
     "activity_threshold_days": 90
   },
   "output": {
-    "default_format": "pdf",
+    "default_format": "html",
     "include_timestamp": true
   },
   "themes": {
@@ -261,12 +234,12 @@ Create a `code2pdf.json` or `code2pdf.yaml` file in your project directory or ho
 ### `build` - Generate CV
 
 ```bash
-code2pdf build <username> [OPTIONS]
+github-scraper build <username> [OPTIONS]
 
 Options:
   -o, --output PATH          Output file path or directory
   -d, --output-dir PATH      Output directory for organized files
-  -f, --format FORMAT        Output format: markdown|html|pdf|all
+  -f, --format FORMAT        Output format: markdown|html|all
   -t, --theme THEME          Theme: professional|modern|minimal
   --enrich-websites          Enable website enrichment with MCP Firecrawl
   --token TEXT               GitHub personal access token
@@ -278,7 +251,7 @@ Options:
 ### `clean` - Clean Up Old Files
 
 ```bash
-code2pdf clean [username] [OPTIONS]
+github-scraper clean [username] [OPTIONS]
 
 Options:
   --days INTEGER             Remove folders older than N days (default: 7)
@@ -288,13 +261,13 @@ Options:
 ### `config` - Show Configuration Help
 
 ```bash
-code2pdf config
+github-scraper config
 ```
 
 ### `doctor` - System Diagnostic
 
 ```bash
-code2pdf doctor
+github-scraper doctor
 ```
 
 ## 🔧 Development
@@ -309,7 +282,7 @@ pip install -e ".[dev]"
 pytest
 
 # Run with coverage
-pytest --cov=code2pdf --cov-report=html
+pytest --cov=github_scraper --cov-report=html
 ```
 
 ### Code Quality
@@ -324,46 +297,6 @@ ruff check src/ tests/
 # Type checking
 mypy src/
 ```
-
-## 📊 Generated CV Sections
-
-### Profile Header
-
-- Name, bio, and contact information
-- Social links and professional status
-- Account age and basic statistics
-
-### Professional Summary
-
-- Activity score and impact level
-- Key metrics and achievements
-- Years of experience and project count
-
-### Technical Expertise
-
-- Programming language proficiency
-- Technology stack insights
-- Specialization areas
-
-### Featured Projects
-
-- Top repositories by stars and diversity
-- Project descriptions and metrics
-- Activity status and licensing
-
-### Development Insights
-
-- Contribution patterns analysis
-- Community engagement metrics
-- Project maintenance indicators
-
-### GitHub Statistics
-
-- Comprehensive metrics table
-- Industry benchmarking
-- Professional indicators
-
-## 🏆 Sample Output
 
 Your generated CV will include:
 
@@ -394,52 +327,6 @@ _Python Developer with 5.2 years on GitHub_
 
 Get your token at: https://github.com/settings/tokens
 
-## 📈 Comparison: Before vs After
-
-| Feature        | Before          | After                    |
-| -------------- | --------------- | ------------------------ |
-| Output Formats | Markdown only   | Markdown, HTML, PDF      |
-| Themes         | Single template | 3 professional themes    |
-| Caching        | None            | Intelligent caching      |
-| Configuration  | Hard-coded      | Fully configurable       |
-| Analytics      | Basic           | Comprehensive insights   |
-| Error Handling | Basic           | Detailed error messages  |
-| Testing        | None            | Comprehensive test suite |
-| Performance    | Slow sequential | Optimized with caching   |
-
-## 📁 Project Structure
-
-```
-code2pdf/
-├── src/code2pdf/           # Main source code
-│   ├── __init__.py
-│   ├── cli.py              # Command-line interface
-│   ├── config.py           # Configuration management
-│   ├── generator.py        # CV generation engine
-│   ├── github.py           # GitHub API integration
-│   ├── mcp_integration.py  # MCP Firecrawl integration
-│   ├── website_enrichment.py # Website analysis
-│   └── template/           # HTML/CSS templates
-├── tests/                  # Comprehensive test suites
-│   ├── test_github.py      # GitHub functionality tests
-│   ├── test_multiple_profiles.py # Website enrichment tests
-│   └── README.md           # Testing documentation
-├── examples/               # Demonstration scripts
-│   ├── demo_real_enrichment.py # Real enrichment demo
-│   ├── production_example.py   # Production integration
-│   ├── mcp_firecrawl_integration.py # MCP example
-│   └── README.md           # Examples documentation
-├── docs/                   # Documentation
-│   ├── WEBSITE_ENRICHMENT.md # Feature documentation
-│   ├── MULTI_PROFILE_TEST_RESULTS.md # Test results
-│   └── README.md           # Documentation index
-├── generated_cvs/          # Output folder for generated CVs
-├── pyproject.toml          # Project configuration
-└── README.md               # This file
-```
-
-## 🤝 Contributing
-
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
 3. **Commit** changes: `git commit -m 'Add amazing feature'`
@@ -453,7 +340,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **PyGithub** for GitHub API integration
-- **WeasyPrint** for PDF generation
 - **Jinja2** for template rendering
 - **Typer** for the CLI interface
 
@@ -461,8 +347,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Documentation**: [Full documentation](https://github.com/nikosmav/code2pdf)
-- **Issues**: [Report bugs](https://github.com/nikosmav/code2pdf/issues)
-- **Discussions**: [Community discussions](https://github.com/nikosmav/code2pdf/discussions)
+- **Documentation**: [Full documentation](https://github.com/nikosmav/github-scraper)
+- **Issues**: [Report bugs](https://github.com/nikosmav/github-scraper/issues)
+- **Discussions**: [Community discussions](https://github.com/nikosmav/github-scraper/discussions)
 
-_Generate your professional CV in seconds with code2pdf!_ ✨
+_Generate your professional CV in seconds with GitHub Scraper!_ ✨

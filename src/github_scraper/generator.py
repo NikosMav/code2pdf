@@ -1,5 +1,5 @@
 """
-Enhanced CV generator with multiple output formats and themes.
+Enhanced CV generator with HTML output format and themes.
 """
 
 from __future__ import annotations
@@ -10,55 +10,9 @@ from datetime import datetime
 
 from jinja2 import Environment, PackageLoader
 
-# Check for optional dependencies without importing them
-_weasyprint_checked = False
-_weasyprint_available = False
-
-
-def _check_weasyprint_available() -> bool:
-    """Check if WeasyPrint is available without importing it."""
-    global _weasyprint_checked, _weasyprint_available
-
-    if _weasyprint_checked:
-        return _weasyprint_available
-
-    try:
-        # Suppress WeasyPrint warning messages more robustly
-        import warnings
-        import sys
-        import io
-
-        # Capture both warnings and stderr
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-
-            # Redirect stderr to capture WeasyPrint messages
-            old_stderr = sys.stderr
-            sys.stderr = io.StringIO()
-
-            try:
-                import importlib.util
-
-                if importlib.util.find_spec("weasyprint"):
-                    _weasyprint_available = True
-                else:
-                    _weasyprint_available = False
-            except (ImportError, OSError, Exception):
-                _weasyprint_available = False
-            finally:
-                # Restore stderr
-                sys.stderr = old_stderr
-
-    except Exception:
-        _weasyprint_available = False
-
-    _weasyprint_checked = True
-    return _weasyprint_available
-
-
 # Initialize Jinja2 environment
 env = Environment(
-    loader=PackageLoader("code2pdf", "template"),
+    loader=PackageLoader("github_scraper", "template"),
     autoescape=False,
     trim_blocks=True,
     lstrip_blocks=True,
@@ -162,54 +116,6 @@ def render_html(
     output_path.write_text(full_html, encoding="utf-8")
 
 
-def render_pdf(
-    context: Dict[str, Any],
-    output_path: Path,
-    theme: str = "professional",
-    config: Optional[Dict[str, Any]] = None,
-) -> None:
-    """Generate a PDF CV from GitHub profile data."""
-    if not is_pdf_available():
-        raise RuntimeError(
-            "📋 PDF generation is not available on this system.\n\n"
-            "💡 To enable PDF generation:\n"
-            "   • On Ubuntu/Debian: sudo apt-get install libpango1.0-dev libharfbuzz-dev libffi-dev libjpeg-dev libopenjp2-7-dev\n"
-            "   • On macOS: brew install pango harfbuzz\n"
-            "   • On Windows: Consider using WSL or Docker for PDF generation\n\n"
-            "🔄 Alternative solutions:\n"
-            "   1. Generate HTML instead: --format html\n"
-            "   2. Use browser 'Print to PDF' from HTML output\n"
-            "   3. Use online HTML-to-PDF converters\n"
-            "   4. Install GTK+ libraries for Windows"
-        )
-
-    # Import WeasyPrint only when actually needed
-    try:
-        import weasyprint  # type: ignore
-    except ImportError:
-        raise RuntimeError("WeasyPrint is not available for PDF generation")
-
-    # First generate HTML
-    html_content = _render_html_content(context, theme, config)
-
-    # Convert HTML to PDF using WeasyPrint
-    try:
-        pdf_document = weasyprint.HTML(string=html_content)
-        pdf_document.write_pdf(output_path)
-    except Exception as e:
-        raise RuntimeError(
-            f"💥 Failed to generate PDF: {str(e)}\n\n"
-            "🔄 Try generating HTML instead:\n"
-            "   code2pdf build {username} --format html\n"
-            "Then use your browser's 'Print to PDF' feature."
-        )
-
-
-def is_pdf_available() -> bool:
-    """Check if PDF generation is available on this system."""
-    return _check_weasyprint_available()
-
-
 def _render_markdown_content(
     context: Dict[str, Any], theme: str, config: Optional[Dict[str, Any]] = None
 ) -> str:
@@ -229,35 +135,6 @@ def _render_markdown_content(
         template = env.get_template("resume.md")
 
     return template.render(**enhanced_context)
-
-
-def _render_html_content(
-    context: Dict[str, Any], theme: str, config: Optional[Dict[str, Any]] = None
-) -> str:
-    """Internal method to render full HTML content."""
-    md_content = _render_markdown_content(context, theme, config)
-
-    md = markdown.Markdown(
-        extensions=[
-            "markdown.extensions.tables",
-            "markdown.extensions.fenced_code",
-            "markdown.extensions.toc",
-            "codehilite",
-        ]
-    )
-
-    html_body = md.convert(md_content)
-    css_content = _get_theme_css(theme, config)
-
-    html_template = env.get_template("base.html")
-    return html_template.render(
-        title=f"{context['name']} - CV",
-        css=css_content,
-        body=html_body,
-        theme=theme,
-        generated_at=datetime.now().isoformat(),
-        **context,
-    )
 
 
 def _get_theme_css(theme: str, config: Optional[Dict[str, Any]] = None) -> str:

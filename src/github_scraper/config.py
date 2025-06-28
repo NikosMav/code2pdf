@@ -1,4 +1,4 @@
-"""Configuration management for code2pdf."""
+"""Configuration management for github-scraper."""
 
 from __future__ import annotations
 import json
@@ -79,18 +79,18 @@ def load_config(config_path: Optional[Path] = None) -> Dict[str, Any]:
     if not config_path:
         # Look for config in common locations
         config_candidates = [
-            Path.cwd() / "code2pdf.json",
-            Path.cwd() / ".code2pdf.json",
-            Path.home() / ".config" / "code2pdf" / "config.json",
+                    Path.cwd() / "github-scraper.json",
+        Path.cwd() / ".github-scraper.json",
+            Path.home() / ".config" / "github-scraper" / "config.json",
         ]
 
         # Only look for YAML files if YAML is available
         if YAML_AVAILABLE:
             config_candidates.extend(
                 [
-                    Path.cwd() / "code2pdf.yaml",
-                    Path.cwd() / ".code2pdf.yaml",
-                    Path.home() / ".config" / "code2pdf" / "config.yaml",
+                            Path.cwd() / "github-scraper.yaml",
+        Path.cwd() / ".github-scraper.yaml",
+                    Path.home() / ".config" / "github-scraper" / "config.yaml",
                 ]
             )
 

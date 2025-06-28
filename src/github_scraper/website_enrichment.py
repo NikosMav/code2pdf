@@ -19,7 +19,7 @@ except ImportError:
     aiofiles = None  # type: ignore
 
 # Cache configuration
-WEBSITE_CACHE_DIR = Path.home() / ".cache" / "code2pdf" / "websites"
+WEBSITE_CACHE_DIR = Path.home() / ".cache" / "github-scraper" / "websites"
 WEBSITE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 

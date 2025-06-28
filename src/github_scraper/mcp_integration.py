@@ -1,4 +1,4 @@
-"""MCP Firecrawl integration module for code2pdf."""
+"""MCP Firecrawl integration module for github-scraper."""
 
 from __future__ import annotations
 from typing import Dict, Any, Optional, Callable

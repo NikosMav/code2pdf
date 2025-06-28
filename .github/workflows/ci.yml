@@ -37,14 +37,14 @@ jobs:
         run: mypy src/
 
       - name: Run tests
-        run: pytest tests/ --cov=code2pdf --cov-report=xml
+        run: pytest tests/ --cov=github_scraper --cov-report=xml
 
       - name: Test CLI import
-        run: python -c "import code2pdf; print('✅ Package imports successfully')"
+        run: python -c "import github_scraper; print('✅ Package imports successfully')"
 
       - name: Test CLI command
         run: |
-          code2pdf --help
+          github-scraper --help
           echo "✅ CLI command works"
 
       - name: Upload coverage

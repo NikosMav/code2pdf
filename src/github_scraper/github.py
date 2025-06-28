@@ -15,7 +15,7 @@ from github.GithubException import RateLimitExceededException, UnknownObjectExce
 
 
 # Cache configuration
-CACHE_DIR = Path.home() / ".cache" / "code2pdf"
+CACHE_DIR = Path.home() / ".cache" / "github-scraper"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -403,7 +403,7 @@ def fetch_profile(
             "🚫 GitHub API rate limit exceeded!\n\n"
             "💡 To avoid rate limits:\n"
             "   1. Get a GitHub personal access token: https://github.com/settings/tokens\n"
-            "   2. Run: code2pdf build username --token YOUR_TOKEN\n\n"
+            "   2. Run: github-scraper build username --token YOUR_TOKEN\n\n"
             "⏰ Rate limits:\n"
             "   • Without token: 60 requests/hour\n"
             "   • With token: 5,000 requests/hour\n"

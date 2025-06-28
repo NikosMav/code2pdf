@@ -1,6 +1,6 @@
 # Tests
 
-This folder contains comprehensive test suites for the code2pdf application, including tests for the website enrichment feature.
+This folder contains comprehensive test suites for the github-scraper application, including tests for the website enrichment feature.
 
 ## 📁 Test Files
 
@@ -49,7 +49,7 @@ python -m pytest tests/
 python -m pytest tests/ -v
 
 # With coverage
-python -m pytest tests/ --cov=src/code2pdf
+python -m pytest tests/ --cov=src/github_scraper
 ```
 
 ### Run Specific Tests

@@ -5,7 +5,7 @@ import os
 from unittest.mock import patch
 
 
-from code2pdf.mcp_integration import (
+from github_scraper.mcp_integration import (
     get_firecrawl_api_key,
     create_firecrawl_request_payload,
 )

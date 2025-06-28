@@ -43,20 +43,20 @@ The website enrichment system automatically discovers personal websites linked i
 
 ```bash
 # Generate CV with website enrichment
-code2pdf build username --enrich-websites
+github-scraper build username --enrich-websites
 
 # Verbose output to see enrichment process
-code2pdf build username --enrich-websites --verbose
+github-scraper build username --enrich-websites --verbose
 
 # Generate multiple formats with enrichment
-code2pdf build username --enrich-websites --format all --theme modern
+github-scraper build username --enrich-websites --format all --theme modern
 ```
 
 ### Programmatic Usage
 
 ```python
-from code2pdf.github import fetch_profile
-from code2pdf.generator import render_markdown
+from github_scraper.github import fetch_profile
+from github_scraper.generator import render_markdown
 
 # Fetch profile with website enrichment
 profile = fetch_profile("username", enrich_websites=True, verbose=True)
