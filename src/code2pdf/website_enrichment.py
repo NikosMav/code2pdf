@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import asyncio
 from urllib.parse import urlparse
-from types import ModuleType
 
 # Check for aiofiles availability
 try:
