@@ -253,7 +253,7 @@ def fetch_profile(
             "location": user.location,
             "company": user.company,
             "blog": user.blog,
-            "twitter_username": getattr(user, 'twitter_username', None),
+            "twitter_username": getattr(user, "twitter_username", None),
             "email": user.email,
             "public_repos": user.public_repos,
             "followers": user.followers,

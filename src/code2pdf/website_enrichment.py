@@ -409,7 +409,7 @@ def process_scraped_data(
     # Ensure insights is properly initialized as a mutable dict
     if "insights" not in processed:
         processed["insights"] = {}
-    
+
     insights_dict: Dict[str, Any] = processed["insights"]
 
     # Detect website type
@@ -575,43 +575,49 @@ def generate_enrichment_summary(
 
         # Collect professional information
         professional: Dict[str, Any] = insights.get("professional", {})
-        
+
         skills = professional.get("skills")
         if skills:
             summary["combined_insights"]["additional_skills"].update(skills)
-            
+
         technologies = professional.get("technologies")
         if technologies:
             summary["combined_insights"]["additional_technologies"].update(technologies)
-            
+
         experience = professional.get("experience")
         if experience:
             summary["combined_insights"]["additional_experience"].extend(experience)
-            
+
         projects = professional.get("projects")
         if projects:
             summary["combined_insights"]["additional_projects"].extend(projects)
-            
+
         services = professional.get("services")
         if services:
             summary["combined_insights"]["professional_services"].extend(services)
 
         # Collect personal information
         personal: Dict[str, Any] = insights.get("personal_info", {})
-        
+
         bio = personal.get("bio")
         if bio:
             summary["combined_insights"]["bio_snippets"].append(bio)
-            
+
         contact = personal.get("contact")
         if contact:
             summary["combined_insights"]["contact_info"].update(contact)
 
     # Convert sets back to lists for JSON serialization
     combined_insights: Dict[str, Any] = summary["combined_insights"]
-    combined_insights["additional_skills"] = list(combined_insights["additional_skills"])
-    combined_insights["additional_technologies"] = list(combined_insights["additional_technologies"])
-    combined_insights["technologies_mentioned"] = list(combined_insights["technologies_mentioned"])
+    combined_insights["additional_skills"] = list(
+        combined_insights["additional_skills"]
+    )
+    combined_insights["additional_technologies"] = list(
+        combined_insights["additional_technologies"]
+    )
+    combined_insights["technologies_mentioned"] = list(
+        combined_insights["technologies_mentioned"]
+    )
 
     return summary
 
