@@ -324,16 +324,10 @@ def fetch_profile(username: str, token: Optional[str] = None, use_cache: bool = 
             # Import and use website enrichment
             try:
                 from .website_enrichment import sync_enrich_profile_with_websites
+                from .mcp_integration import create_firecrawl_wrapper
                 
-                # Create a wrapper function for Firecrawl scraping
-                def firecrawl_scrape_wrapper(url, formats=None, onlyMainContent=True, waitFor=3000, extract=None):
-                    """Wrapper function to call MCP Firecrawl tools if available."""
-                    try:
-                        # This would be called by the MCP system when available
-                        # For now, we'll return a basic structure that the enrichment can handle
-                        return None  # This will trigger fallback behavior
-                    except Exception:
-                        return None
+                # Get the real Firecrawl wrapper function
+                firecrawl_scrape_wrapper = create_firecrawl_wrapper()
                 
                 # Enrich the profile with website data
                 profile_data = sync_enrich_profile_with_websites(

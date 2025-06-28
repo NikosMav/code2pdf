@@ -16,6 +16,7 @@ dependencies = [
     "pygments>=2.16",
     "aiohttp>=3.9",
     "aiofiles>=23.2",
+    "httpx>=0.24",
 ]
 
 [project.scripts]

@@ -50,13 +50,7 @@ def _check_weasyprint_available() -> bool:
     _weasyprint_checked = True
     return _weasyprint_available
 
-def _check_yaml_available() -> bool:
-    """Check if PyYAML is available without importing it."""
-    try:
-        import yaml
-        return True
-    except ImportError:
-        return False
+
 
 # Initialize Jinja2 environment
 env = Environment(

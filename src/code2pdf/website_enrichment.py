@@ -177,20 +177,21 @@ def crawl_website_with_firecrawl(url: str, verbose: bool = False, firecrawl_scra
             print(f"🕷️  Crawling website: {url}")
         
         # Configure scraping options for personal websites
+        # First extract general information
         scrape_result = firecrawl_scrape_func(
             url=url,
             formats=["markdown", "extract"],
             onlyMainContent=True,
-            waitFor=3000,  # Wait for dynamic content
+            waitFor=5000,  # Wait for dynamic content (increased for MUI components)
             extract={
-                "prompt": "Extract personal and professional information including: name, title/role, skills, experience, education, projects, contact information, about/bio sections, and any other relevant career or personal details.",
+                "prompt": "Extract personal and professional information including: name, title/role, skills, experience, education, projects, contact information, about/bio sections, and any other relevant career or personal details. For skills, focus on soft skills, methodologies, and practices (not technical tools).",
                 "schema": {
                     "type": "object",
                     "properties": {
                         "name": {"type": "string", "description": "Person's full name"},
                         "title": {"type": "string", "description": "Professional title or role"},
                         "bio": {"type": "string", "description": "About/bio section content"},
-                        "skills": {"type": "array", "items": {"type": "string"}, "description": "Technical skills and competencies"},
+                        "skills": {"type": "array", "items": {"type": "string"}, "description": "Soft skills, methodologies, practices, and competencies (e.g., Problem Solving, Team Leadership, Agile Development, UX Design, Project Management)"},
                         "experience": {"type": "array", "items": {"type": "string"}, "description": "Work experience and roles"},
                         "education": {"type": "array", "items": {"type": "string"}, "description": "Educational background"},
                         "projects": {"type": "array", "items": {"type": "string"}, "description": "Notable projects or work"},
@@ -202,6 +203,34 @@ def crawl_website_with_firecrawl(url: str, verbose: bool = False, firecrawl_scra
                 }
             }
         )
+        
+        # Then extract technologies with focused approach
+        if scrape_result:
+            tech_result = firecrawl_scrape_func(
+                url=url,
+                formats=["extract"],
+                onlyMainContent=True,
+                waitFor=5000,
+                extract={
+                    "prompt": "Extract all technologies, programming languages, frameworks, tools, libraries, and platforms mentioned on this website. Look for technology sections, chips, badges, tech stacks, and any technical tools. Include content from interactive elements like buttons and badges.",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "technologies": {
+                                "type": "array", 
+                                "items": {"type": "string"}, 
+                                "description": "All technologies, programming languages, frameworks, tools, libraries, and platforms found"
+                            }
+                        }
+                    }
+                }
+            )
+            
+            # Merge the technology data into the main result
+            if tech_result and 'extract' in tech_result:
+                tech_data = tech_result['extract']
+                if 'technologies' in tech_data and 'extract' in scrape_result:
+                    scrape_result['extract']['technologies'] = tech_data['technologies']
         
         if scrape_result and 'data' in scrape_result:
             return process_scraped_data(scrape_result['data'], url, verbose)
@@ -282,6 +311,7 @@ def process_scraped_data(scraped_data: Dict[str, Any], url: str, verbose: bool =
             },
             "professional": {
                 "skills": extracted.get('skills', []),
+                "technologies": extracted.get('technologies', []),
                 "experience": extracted.get('experience', []),
                 "education": extracted.get('education', []),
                 "projects": extracted.get('projects', []),
@@ -387,6 +417,7 @@ def generate_enrichment_summary(website_data_list: List[Dict[str, Any]]) -> Dict
         "websites_crawled": len(website_data_list),
         "combined_insights": {
             "additional_skills": set(),
+            "additional_technologies": set(),
             "additional_experience": [],
             "additional_projects": [],
             "professional_services": [],
@@ -412,6 +443,8 @@ def generate_enrichment_summary(website_data_list: List[Dict[str, Any]]) -> Dict
         professional = insights.get("professional", {})
         if professional.get("skills"):
             summary["combined_insights"]["additional_skills"].update(professional["skills"])
+        if professional.get("technologies"):
+            summary["combined_insights"]["additional_technologies"].update(professional["technologies"])
         if professional.get("experience"):
             summary["combined_insights"]["additional_experience"].extend(professional["experience"])
         if professional.get("projects"):
@@ -428,6 +461,7 @@ def generate_enrichment_summary(website_data_list: List[Dict[str, Any]]) -> Dict
     
     # Convert sets back to lists for JSON serialization
     summary["combined_insights"]["additional_skills"] = list(summary["combined_insights"]["additional_skills"])
+    summary["combined_insights"]["additional_technologies"] = list(summary["combined_insights"]["additional_technologies"])
     summary["combined_insights"]["technologies_mentioned"] = list(summary["combined_insights"]["technologies_mentioned"])
     
     return summary
