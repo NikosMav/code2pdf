@@ -1,6 +1,7 @@
 """
 Enhanced CV generator with multiple output formats and themes.
 """
+
 from __future__ import annotations
 from pathlib import Path
 from typing import Dict, Any, Optional
@@ -13,43 +14,46 @@ from jinja2 import Environment, PackageLoader
 _weasyprint_checked = False
 _weasyprint_available = False
 
+
 def _check_weasyprint_available() -> bool:
     """Check if WeasyPrint is available without importing it."""
     global _weasyprint_checked, _weasyprint_available
-    
+
     if _weasyprint_checked:
         return _weasyprint_available
-    
+
     try:
         # Suppress WeasyPrint warning messages more robustly
         import warnings
         import sys
         import io
-        import contextlib
-        
+
         # Capture both warnings and stderr
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            
+
             # Redirect stderr to capture WeasyPrint messages
             old_stderr = sys.stderr
             sys.stderr = io.StringIO()
-            
+
             try:
-                import weasyprint
-                _weasyprint_available = True
+                import importlib.util
+
+                if importlib.util.find_spec("weasyprint"):
+                    _weasyprint_available = True
+                else:
+                    _weasyprint_available = False
             except (ImportError, OSError, Exception):
                 _weasyprint_available = False
             finally:
                 # Restore stderr
                 sys.stderr = old_stderr
-                
+
     except Exception:
         _weasyprint_available = False
-    
+
     _weasyprint_checked = True
     return _weasyprint_available
-
 
 
 # Initialize Jinja2 environment
@@ -60,6 +64,7 @@ env = Environment(
     lstrip_blocks=True,
 )
 
+
 # Add custom filters
 def format_number(value: int) -> str:
     """Format large numbers with K/M suffixes."""
@@ -68,6 +73,7 @@ def format_number(value: int) -> str:
     elif value >= 1_000:
         return f"{value / 1_000:.1f}K"
     return str(value)
+
 
 def days_ago(days: int) -> str:
     """Convert days to human-readable format."""
@@ -84,11 +90,17 @@ def days_ago(days: int) -> str:
     else:
         return f"{days // 365} years ago"
 
-env.filters['format_number'] = format_number
-env.filters['days_ago'] = days_ago
+
+env.filters["format_number"] = format_number
+env.filters["days_ago"] = days_ago
 
 
-def render_markdown(context: Dict[str, Any], output_path: Path, theme: str = "professional", config: Optional[Dict[str, Any]] = None) -> None:
+def render_markdown(
+    context: Dict[str, Any],
+    output_path: Path,
+    theme: str = "professional",
+    config: Optional[Dict[str, Any]] = None,
+) -> None:
     """Generate a markdown CV from GitHub profile data."""
     # Add theme and config to context
     enhanced_context = {
@@ -97,38 +109,45 @@ def render_markdown(context: Dict[str, Any], output_path: Path, theme: str = "pr
         "config": config or {},
         "generated_at": datetime.now().isoformat(),
     }
-    
+
     # Choose template based on theme
     template_name = f"resume_{theme}.md" if theme != "professional" else "resume.md"
-    
+
     try:
         template = env.get_template(template_name)
     except Exception:
         # Fall back to default template if theme-specific template doesn't exist
         template = env.get_template("resume.md")
-    
+
     markdown_content = template.render(**enhanced_context)
     output_path.write_text(markdown_content, encoding="utf-8")
 
 
-def render_html(context: Dict[str, Any], output_path: Path, theme: str = "professional", config: Optional[Dict[str, Any]] = None) -> None:
+def render_html(
+    context: Dict[str, Any],
+    output_path: Path,
+    theme: str = "professional",
+    config: Optional[Dict[str, Any]] = None,
+) -> None:
     """Generate an HTML CV from GitHub profile data."""
     # First generate markdown
     md_content = _render_markdown_content(context, theme, config)
-    
+
     # Convert markdown to HTML
-    md = markdown.Markdown(extensions=[
-        'markdown.extensions.tables',
-        'markdown.extensions.fenced_code',
-        'markdown.extensions.toc',
-        'codehilite',
-    ])
-    
+    md = markdown.Markdown(
+        extensions=[
+            "markdown.extensions.tables",
+            "markdown.extensions.fenced_code",
+            "markdown.extensions.toc",
+            "codehilite",
+        ]
+    )
+
     html_body = md.convert(md_content)
-    
+
     # Get CSS for theme
     css_content = _get_theme_css(theme, config)
-    
+
     # Generate full HTML document
     html_template = env.get_template("base.html")
     full_html = html_template.render(
@@ -137,13 +156,18 @@ def render_html(context: Dict[str, Any], output_path: Path, theme: str = "profes
         body=html_body,
         theme=theme,
         generated_at=datetime.now().isoformat(),
-        **context
+        **context,
     )
-    
+
     output_path.write_text(full_html, encoding="utf-8")
 
 
-def render_pdf(context: Dict[str, Any], output_path: Path, theme: str = "professional", config: Optional[Dict[str, Any]] = None) -> None:
+def render_pdf(
+    context: Dict[str, Any],
+    output_path: Path,
+    theme: str = "professional",
+    config: Optional[Dict[str, Any]] = None,
+) -> None:
     """Generate a PDF CV from GitHub profile data."""
     if not is_pdf_available():
         raise RuntimeError(
@@ -158,16 +182,16 @@ def render_pdf(context: Dict[str, Any], output_path: Path, theme: str = "profess
             "   3. Use online HTML-to-PDF converters\n"
             "   4. Install GTK+ libraries for Windows"
         )
-    
+
     # Import WeasyPrint only when actually needed
     try:
         import weasyprint
     except ImportError:
         raise RuntimeError("WeasyPrint is not available for PDF generation")
-    
+
     # First generate HTML
     html_content = _render_html_content(context, theme, config)
-    
+
     # Convert HTML to PDF using WeasyPrint
     try:
         pdf_document = weasyprint.HTML(string=html_content)
@@ -186,7 +210,9 @@ def is_pdf_available() -> bool:
     return _check_weasyprint_available()
 
 
-def _render_markdown_content(context: Dict[str, Any], theme: str, config: Optional[Dict[str, Any]] = None) -> str:
+def _render_markdown_content(
+    context: Dict[str, Any], theme: str, config: Optional[Dict[str, Any]] = None
+) -> str:
     """Internal method to render markdown content without writing to file."""
     enhanced_context = {
         **context,
@@ -194,31 +220,35 @@ def _render_markdown_content(context: Dict[str, Any], theme: str, config: Option
         "config": config or {},
         "generated_at": datetime.now().isoformat(),
     }
-    
+
     template_name = f"resume_{theme}.md" if theme != "professional" else "resume.md"
-    
+
     try:
         template = env.get_template(template_name)
     except Exception:
         template = env.get_template("resume.md")
-    
+
     return template.render(**enhanced_context)
 
 
-def _render_html_content(context: Dict[str, Any], theme: str, config: Optional[Dict[str, Any]] = None) -> str:
+def _render_html_content(
+    context: Dict[str, Any], theme: str, config: Optional[Dict[str, Any]] = None
+) -> str:
     """Internal method to render full HTML content."""
     md_content = _render_markdown_content(context, theme, config)
-    
-    md = markdown.Markdown(extensions=[
-        'markdown.extensions.tables',
-        'markdown.extensions.fenced_code',
-        'markdown.extensions.toc',
-        'codehilite',
-    ])
-    
+
+    md = markdown.Markdown(
+        extensions=[
+            "markdown.extensions.tables",
+            "markdown.extensions.fenced_code",
+            "markdown.extensions.toc",
+            "codehilite",
+        ]
+    )
+
     html_body = md.convert(md_content)
     css_content = _get_theme_css(theme, config)
-    
+
     html_template = env.get_template("base.html")
     return html_template.render(
         title=f"{context['name']} - CV",
@@ -226,7 +256,7 @@ def _render_html_content(context: Dict[str, Any], theme: str, config: Optional[D
         body=html_body,
         theme=theme,
         generated_at=datetime.now().isoformat(),
-        **context
+        **context,
     )
 
 

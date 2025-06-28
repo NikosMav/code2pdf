@@ -135,6 +135,21 @@ code2pdf build nikosmav --no-cache --format html
 
 ### 🌐 Website Enrichment
 
+**Setup Required:**
+For website enrichment to work, you need to set up your Firecrawl API key:
+
+```bash
+# Set your Firecrawl API key as an environment variable
+export FIRECRAWL_API_KEY="your_firecrawl_api_key_here"
+
+# On Windows:
+set FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+```
+
+Get your free API key from [Firecrawl](https://firecrawl.dev/).
+
+**Usage:**
+
 ```bash
 # Generate CV with website enrichment (analyzes personal websites)
 code2pdf build nikosmav --enrich-websites --verbose
