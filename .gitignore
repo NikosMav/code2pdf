@@ -32,6 +32,7 @@ env/
 resume.md
 resume.pdf
 *.resume.*
+generated_cvs/
 
 # IDE
 .vscode/
