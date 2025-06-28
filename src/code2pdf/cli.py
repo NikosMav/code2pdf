@@ -44,6 +44,7 @@ def build(
     token: Optional[str] = typer.Option(None, "--token", help="GitHub token for higher rate limits"),
     config: Optional[Path] = typer.Option(None, "--config", "-c", help="Path to configuration file"),
     cache: bool = typer.Option(True, "--cache/--no-cache", help="Enable/disable API response caching"),
+    enrich_websites: bool = typer.Option(False, "--enrich-websites", help="Crawl personal websites for additional profile information"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output"),
 ):
     """Build a professional CV from a GitHub profile with multiple output formats."""
@@ -65,7 +66,7 @@ def build(
             typer.echo(f"🚀 Fetching profile data for {user}...")
         
         # Fetch profile data with caching support
-        data = fetch_profile(user, token, use_cache=cache, verbose=verbose)
+        data = fetch_profile(user, token, use_cache=cache, verbose=verbose, enrich_websites=enrich_websites)
         
         if verbose:
             typer.echo(f"📊 Found {len(data['repos'])} repositories")

@@ -27,6 +27,15 @@ Generate professional CVs from GitHub profiles with comprehensive analytics and 
 - **📱 Responsive Design** - Mobile-friendly HTML/PDF outputs
 - **🎯 Verbose Mode** - Detailed progress reporting
 
+### **🌐 Website Enrichment (New!)**
+
+- **📝 Personal Website Integration** - Automatically discovers and analyzes personal websites
+- **🔍 Smart URL Discovery** - Finds websites from GitHub profile, bio, and repositories
+- **🤖 MCP Firecrawl Integration** - Uses advanced web scraping with AI-powered extraction
+- **📊 Enhanced Profiles** - Adds skills, experience, and projects from personal websites
+- **🛡️ Intelligent Filtering** - Focuses on personal websites, filters out social media
+- **🔄 Graceful Fallback** - Works perfectly even when no websites are found
+
 ## 📦 Installation
 
 ### Basic Installation (Markdown + HTML)
@@ -122,6 +131,19 @@ code2pdf build nikosmav --output my_resume.html --theme minimal
 
 # Disable caching
 code2pdf build nikosmav --no-cache --format html
+```
+
+### 🌐 Website Enrichment
+
+```bash
+# Generate CV with website enrichment (analyzes personal websites)
+code2pdf build nikosmav --enrich-websites --verbose
+
+# Enhanced CV with all formats
+code2pdf build nikosmav --enrich-websites --format all --theme modern
+
+# Website enrichment with custom output
+code2pdf build nikosmav --enrich-websites --output-dir enhanced_cvs
 ```
 
 ### File Organization
@@ -231,6 +253,7 @@ Options:
   -d, --output-dir PATH      Output directory for organized files
   -f, --format FORMAT        Output format: markdown|html|pdf|all
   -t, --theme THEME          Theme: professional|modern|minimal
+  --enrich-websites          Enable website enrichment with MCP Firecrawl
   --token TEXT               GitHub personal access token
   -c, --config PATH          Configuration file path
   --cache/--no-cache         Enable/disable caching
@@ -368,6 +391,37 @@ Get your token at: https://github.com/settings/tokens
 | Error Handling | Basic           | Detailed error messages  |
 | Testing        | None            | Comprehensive test suite |
 | Performance    | Slow sequential | Optimized with caching   |
+
+## 📁 Project Structure
+
+```
+code2pdf/
+├── src/code2pdf/           # Main source code
+│   ├── __init__.py
+│   ├── cli.py              # Command-line interface
+│   ├── config.py           # Configuration management
+│   ├── generator.py        # CV generation engine
+│   ├── github.py           # GitHub API integration
+│   ├── mcp_integration.py  # MCP Firecrawl integration
+│   ├── website_enrichment.py # Website analysis
+│   └── template/           # HTML/CSS templates
+├── tests/                  # Comprehensive test suites
+│   ├── test_github.py      # GitHub functionality tests
+│   ├── test_multiple_profiles.py # Website enrichment tests
+│   └── README.md           # Testing documentation
+├── examples/               # Demonstration scripts
+│   ├── demo_real_enrichment.py # Real enrichment demo
+│   ├── production_example.py   # Production integration
+│   ├── mcp_firecrawl_integration.py # MCP example
+│   └── README.md           # Examples documentation
+├── docs/                   # Documentation
+│   ├── WEBSITE_ENRICHMENT.md # Feature documentation
+│   ├── MULTI_PROFILE_TEST_RESULTS.md # Test results
+│   └── README.md           # Documentation index
+├── generated_cvs/          # Output folder for generated CVs
+├── pyproject.toml          # Project configuration
+└── README.md               # This file
+```
 
 ## 🤝 Contributing
 

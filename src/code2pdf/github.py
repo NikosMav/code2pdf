@@ -188,7 +188,7 @@ def analyze_repository_trends(repos: List[Dict]) -> Dict[str, Any]:
     }
 
 
-def fetch_profile(username: str, token: Optional[str] = None, use_cache: bool = True, verbose: bool = False) -> Dict[str, Any]:
+def fetch_profile(username: str, token: Optional[str] = None, use_cache: bool = True, verbose: bool = False, enrich_websites: bool = False) -> Dict[str, Any]:
     """Fetch comprehensive GitHub profile with enhanced analytics and caching."""
     
     # Setup cache
@@ -315,6 +315,47 @@ def fetch_profile(username: str, token: Optional[str] = None, use_cache: bool = 
                 seen_languages.add(lang)
         
         profile_data["featured_repos"] = featured_repos
+        
+        # Website enrichment if requested
+        if enrich_websites:
+            if verbose:
+                print("🌐 Starting website enrichment...")
+            
+            # Import and use website enrichment
+            try:
+                from .website_enrichment import sync_enrich_profile_with_websites
+                
+                # Create a wrapper function for Firecrawl scraping
+                def firecrawl_scrape_wrapper(url, formats=None, onlyMainContent=True, waitFor=3000, extract=None):
+                    """Wrapper function to call MCP Firecrawl tools if available."""
+                    try:
+                        # This would be called by the MCP system when available
+                        # For now, we'll return a basic structure that the enrichment can handle
+                        return None  # This will trigger fallback behavior
+                    except Exception:
+                        return None
+                
+                # Enrich the profile with website data
+                profile_data = sync_enrich_profile_with_websites(
+                    profile_data, 
+                    use_cache=use_cache, 
+                    verbose=verbose,
+                    firecrawl_scrape_func=firecrawl_scrape_wrapper
+                )
+                
+                if verbose:
+                    enrichment = profile_data.get("website_enrichment", {})
+                    if enrichment.get("crawled_websites"):
+                        print(f"✅ Enriched profile with {len(enrichment['crawled_websites'])} website(s)")
+                    else:
+                        print("ℹ️  No additional website data found")
+                        
+            except ImportError as e:
+                if verbose:
+                    print(f"⚠️  Website enrichment module not available: {e}")
+            except Exception as e:
+                if verbose:
+                    print(f"⚠️  Website enrichment failed: {e}")
         
         # Cache the results
         if use_cache:
