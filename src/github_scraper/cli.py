@@ -44,7 +44,10 @@ def build(
         None, "--config", "-c", help="Path to configuration file"
     ),
     cache: bool = typer.Option(
-        True, "--cache/--no-cache", help="Enable/disable API response caching"
+        True, "--cache/--no-cache", help="Enable/disable caching (GitHub profiles cached 1h, websites 24h)"
+    ),
+    refresh: bool = typer.Option(
+        False, "--refresh", help="Force fresh download, bypass all caches (same as --no-cache)"
     ),
     enrich_websites: bool = typer.Option(
         False,
@@ -53,6 +56,12 @@ def build(
     ),
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Enable verbose output"
+    ),
+    include_deeper_signals: bool = typer.Option(
+        False, "--include-deeper-signals", help="Include deeper GitHub signals (PR reviews, issues, discussions, projects)"
+    ),
+    full_profile: bool = typer.Option(
+        False, "--full-profile", help="Include all features: website enrichment + deeper signals"
     ),
 ):
     """Build a professional CV from a GitHub profile with comprehensive data scraping and analysis."""
@@ -64,15 +73,51 @@ def build(
         if verbose:
             typer.echo(f"🚀 Fetching profile data for {user}...")
 
+        # Determine cache usage - refresh flag overrides cache setting
+        use_cache = cache and not refresh
+        
+        if refresh and verbose:
+            typer.echo("🔄 Refresh mode: forcing fresh download, bypassing all caches")
+        elif not cache and verbose:
+            typer.echo("🚫 Cache disabled: fetching fresh data")
+
+        # Full profile mode enables all features
+        if full_profile:
+            enrich_websites = True
+            include_deeper_signals = True
+            if verbose:
+                typer.echo("🚀 Full profile mode: enabling all features")
+
         # Fetch profile data with caching support
         data = fetch_profile(
             user,
             token,
-            use_cache=cache,
+            use_cache=use_cache,
             verbose=verbose,
             enrich_websites=enrich_websites,
             config_data=config_data,
         )
+
+        # Collect deeper signals if requested
+        if include_deeper_signals:
+            try:
+                from .plugins.deeper_signals import collect
+                deeper_signals = collect(
+                    user,
+                    token=token,
+                    use_cache=use_cache,
+                    verbose=verbose
+                )
+                if deeper_signals:
+                    data["deeper_signals"] = deeper_signals
+                    if verbose:
+                        typer.echo(f"🔍 Collected deeper signals: {len(deeper_signals)} categories")
+            except ImportError as e:
+                if verbose:
+                    typer.echo(f"⚠️  Deeper signals plugin not available: {e}")
+            except Exception as e:
+                if verbose:
+                    typer.echo(f"⚠️  Failed to collect deeper signals: {e}")
 
         if verbose:
             typer.echo(f"📊 Found {len(data['repos'])} repositories")

@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased] - 2024-01-16
+
+### ✅ Added
+
+- **`--refresh` Flag**: Added `--refresh` flag as an alias for `--no-cache` to force fresh downloads
+- **Enhanced Cache Documentation**: Improved help text for cache-related flags with duration information
+- **Better Cache Control**: More intuitive cache bypass options for users
+- **Deeper GitHub Signals Plugin**: New plugin system with deeper GitHub analytics
+- **`--include-deeper-signals` Flag**: Collect PR reviews, issues, discussions, and project data
+- **`--full-profile` Flag**: Enable all features (website enrichment + deeper signals)
+- **GraphQL API Integration**: Use GitHub GraphQL v4 API for advanced signal collection
+- **Advanced Community Analytics**: PR review analysis, issue engagement, and discussion metrics
+
+### 🔄 Changed
+
+- **Cache Flag Help Text**: Updated `--cache/--no-cache` help text to include cache duration information
+- **Verbose Output**: Added informative messages when refresh mode is enabled
+- **Template System**: Enhanced templates with optional deeper signals section
+
+### 🐛 Fixed
+
+- **GraphQL Sponsorship Field**: Fixed `isSponsorable` field error by using correct `hasSponsorsListing` and `sponsorshipsAsMaintainer` fields
+- **Null Handling in Deeper Signals**: Fixed `'NoneType' object has no attribute 'get'` error with robust null checking for GraphQL responses
+
 ## [Ultra-Streamlined Version] - 2024-01-16
 
 ### 🎯 Major Refactoring: Pure Focus on Data Scraping

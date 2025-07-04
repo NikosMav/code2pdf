@@ -20,6 +20,14 @@ Generate professional CVs from GitHub profiles with comprehensive data scraping 
 - **📊 Enhanced Profiles** - Adds skills, experience, and projects from personal websites
 - **🛡️ Intelligent Filtering** - Focuses on personal websites, filters out social media
 
+### **Deeper GitHub Signals**
+
+- **🔍 PR Review Analytics** - Comprehensive pull request review analysis and approval ratios
+- **🎯 Issue Engagement** - Track issues opened, closed, and comment participation
+- **💬 Discussion Activity** - Repository discussions started and engagement metrics
+- **📋 Project Management** - Project board item creation and management activity
+- **💰 Sponsorship Status** - GitHub Sponsors enablement and funding opportunities
+
 ### **Technical Features**
 
 - **⚡ Intelligent Caching** - API response caching for faster subsequent runs
@@ -59,6 +67,12 @@ github-scraper build username
 # Generate with website enrichment (requires Firecrawl API key)
 github-scraper build username --enrich-websites --verbose
 
+# Generate with deeper GitHub signals (requires GitHub token)
+github-scraper build username --include-deeper-signals --token YOUR_GITHUB_TOKEN
+
+# Generate full profile with all features
+github-scraper build username --full-profile --token YOUR_GITHUB_TOKEN
+
 # Generate with GitHub token for higher rate limits
 github-scraper build username --token YOUR_GITHUB_TOKEN
 ```
@@ -84,6 +98,24 @@ set FIRECRAWL_API_KEY=your_firecrawl_api_key_here
 github-scraper build username --enrich-websites --verbose
 ```
 
+### 🔍 Deeper GitHub Signals Setup
+
+Deeper GitHub signals require a GitHub Personal Access Token for GraphQL API access:
+
+1. **Get GitHub Token**: Go to [GitHub Settings > Tokens](https://github.com/settings/tokens)
+2. **Create Token**: Generate a new token with `repo` and `user` scopes
+3. **Use with deeper signals**:
+
+```bash
+github-scraper build username --include-deeper-signals --token YOUR_GITHUB_TOKEN
+```
+
+4. **Full profile mode** (includes everything):
+
+```bash
+github-scraper build username --full-profile --token YOUR_GITHUB_TOKEN
+```
+
 ### Advanced Usage
 
 ```bash
@@ -93,8 +125,10 @@ github-scraper build username --output-dir team_profiles
 # Single file output (bypasses organization)
 github-scraper build username --output resume.md
 
-# Disable caching for fresh data
+# Force fresh download, bypass all caches
 github-scraper build username --no-cache
+# or use the refresh flag (same effect)
+github-scraper build username --refresh
 
 # Clean up old generated files
 github-scraper clean --days 7
@@ -117,6 +151,25 @@ generated_cvs/
 - **Default**: `generated_cvs/{username}_{date}/`
 - **Custom directory**: `--output-dir custom_folder/`
 - **Single file**: `--output filename.md` (bypasses organization)
+
+## 🗂️ Caching System
+
+The tool uses intelligent caching to speed up subsequent runs:
+
+- **GitHub Profile Data**: Cached for 1 hour in `~/.cache/github-scraper/`
+- **Website Content**: Cached for 24 hours in `~/.cache/github-scraper/websites/`
+- **Deeper Signals**: Cached for 2 hours in `~/.cache/github-scraper/`
+
+**Cache Control:**
+
+```bash
+# Use cache (default behavior)
+github-scraper build username
+
+# Force fresh download, bypass all caches
+github-scraper build username --no-cache
+github-scraper build username --refresh  # Same as --no-cache
+```
 
 ## ⚙️ Configuration
 
@@ -156,9 +209,12 @@ Options:
   -o, --output PATH          Output file path
   -d, --output-dir PATH      Output directory for organized files
   --enrich-websites          Enable website enrichment
+  --include-deeper-signals   Include deeper GitHub signals (PR reviews, issues, discussions, projects)
+  --full-profile             Include all features: website enrichment + deeper signals
   --token TEXT               GitHub personal access token
   -c, --config PATH          Configuration file path
-  --cache/--no-cache         Enable/disable caching
+  --cache/--no-cache         Enable/disable caching (GitHub profiles cached 1h, websites 24h)
+  --refresh                  Force fresh download, bypass all caches (same as --no-cache)
   -v, --verbose              Enable verbose output
 ```
 
