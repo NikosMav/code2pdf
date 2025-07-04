@@ -15,61 +15,20 @@ except ImportError:
     yaml = None  # type: ignore
 
 DEFAULT_CONFIG = {
-    "output": {
-        "default_format": "markdown",
-        "filename_template": "{username}_cv",
-        "include_timestamp": False,
-    },
     "github": {
         "cache_duration_hours": 1,
-        "max_repos": 10,
+        "max_repos": 20,
         "include_forks": False,
         "include_private": False,
     },
     "cv": {
-        "include_contact_info": True,
-        "include_stats_table": True,
-        "include_insights": True,
         "max_featured_repos": 8,
         "activity_threshold_days": 90,
     },
-    "themes": {
-        "professional": {
-            "colors": {
-                "primary": "#2563eb",
-                "secondary": "#64748b",
-                "accent": "#059669",
-            },
-            "fonts": {
-                "body": "system-ui, -apple-system, sans-serif",
-                "heading": "system-ui, -apple-system, sans-serif",
-                "mono": "ui-monospace, 'Cascadia Code', consolas, monospace",
-            },
-        },
-        "modern": {
-            "colors": {
-                "primary": "#7c3aed",
-                "secondary": "#6b7280",
-                "accent": "#f59e0b",
-            },
-            "fonts": {
-                "body": "'Inter', system-ui, sans-serif",
-                "heading": "'Inter', system-ui, sans-serif",
-                "mono": "'JetBrains Mono', ui-monospace, monospace",
-            },
-        },
-        "minimal": {
-            "colors": {
-                "primary": "#374151",
-                "secondary": "#9ca3af",
-                "accent": "#111827",
-            },
-            "fonts": {
-                "body": "Georgia, 'Times New Roman', serif",
-                "heading": "Georgia, 'Times New Roman', serif",
-                "mono": "'Courier New', monospace",
-            },
-        },
+    "scraping": {
+        "enable_website_enrichment": True,
+        "max_websites_per_profile": 3,
+        "website_cache_duration_hours": 24,
     },
 }
 
@@ -157,16 +116,17 @@ def create_sample_config(output_path: Path, format: str = "json") -> None:
     """Create a sample configuration file."""
     sample_config = {
         "github": {
-            "cache_duration_hours": 1,
-            "max_repos": 15,
+            "cache_duration_hours": 2,
+            "max_repos": 20,
         },
         "cv": {
             "max_featured_repos": 10,
-            "include_insights": True,
+            "activity_threshold_days": 90,
         },
-        "output": {
-            "default_format": "pdf",
-            "include_timestamp": True,
+        "scraping": {
+            "enable_website_enrichment": True,
+            "max_websites_per_profile": 5,
+            "website_cache_duration_hours": 48,
         },
     }
 

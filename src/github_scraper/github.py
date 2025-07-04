@@ -7,9 +7,6 @@ from datetime import datetime, timezone, timedelta
 from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Any, Optional
-import asyncio
-import aiofiles
-
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
@@ -34,23 +31,7 @@ def _is_cache_valid(cache_path: Path, max_age_hours: int = 1) -> bool:
     return cache_age < timedelta(hours=max_age_hours)
 
 
-async def _save_cache(data: Dict[str, Any], cache_path: Path) -> None:
-    """Save data to cache file asynchronously."""
-    try:
-        async with aiofiles.open(cache_path, "w", encoding="utf-8") as f:
-            await f.write(json.dumps(data, default=str, indent=2))
-    except Exception:
-        pass  # Ignore cache write errors
 
-
-async def _load_cache(cache_path: Path) -> Optional[Dict[str, Any]]:
-    """Load data from cache file asynchronously."""
-    try:
-        async with aiofiles.open(cache_path, "r", encoding="utf-8") as f:
-            content = await f.read()
-            return json.loads(content)
-    except Exception:
-        return None
 
 
 def calculate_activity_score(repos: List[Dict]) -> int:
@@ -205,8 +186,14 @@ def fetch_profile(
     use_cache: bool = True,
     verbose: bool = False,
     enrich_websites: bool = False,
+    config_data: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Fetch comprehensive GitHub profile with enhanced analytics and caching."""
+    
+    # Use provided config or import default
+    if config_data is None:
+        from .config import DEFAULT_CONFIG
+        config_data = DEFAULT_CONFIG
 
     # Setup cache
     token_hash = hashlib.md5(token.encode()).hexdigest() if token else ""
@@ -272,7 +259,7 @@ def fetch_profile(
 
         # Enhanced repository data with better rate limit management
         repo_count = 0
-        max_repos = 15  # Increased but still conservative
+        max_repos = config_data.get("github", {}).get("max_repos", 20)
 
         for repo in user.get_repos(sort="updated", direction="desc"):
             if repo.fork:
@@ -417,12 +404,4 @@ def fetch_profile(
         raise RuntimeError(f"💥 Error fetching GitHub profile: {str(e)}")
 
 
-# Async version for future use
-async def fetch_profile_async(
-    username: str, token: Optional[str] = None, use_cache: bool = True
-) -> Dict[str, Any]:
-    """Async version of profile fetching (placeholder for future implementation)."""
-    # This would require rewriting the GitHub API calls to use aiohttp
-    # For now, we'll run the sync version in a thread pool
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, fetch_profile, username, token, use_cache)
+

@@ -1,7 +1,7 @@
 {
   "github": {
     "cache_duration_hours": 2,
-    "max_repos": 15,
+    "max_repos": 20,
     "include_forks": false,
     "include_private": false
   },
@@ -9,50 +9,20 @@
     "include_contact_info": true,
     "include_stats_table": true,
     "include_insights": true,
-    "max_featured_repos": 10,
+    "max_featured_repos": 12,
     "activity_threshold_days": 90
   },
   "output": {
-    "default_format": "html",
-    "filename_template": "{username}_professional_cv",
+    "filename_template": "{username}_comprehensive_cv",
     "include_timestamp": true
   },
-  "themes": {
-    "professional": {
-      "colors": {
-        "primary": "#2563eb",
-        "secondary": "#64748b",  
-        "accent": "#059669"
-      },
-      "fonts": {
-        "body": "system-ui, -apple-system, sans-serif",
-        "heading": "system-ui, -apple-system, sans-serif",
-        "mono": "ui-monospace, 'Cascadia Code', consolas, monospace"
-      }
-    },
-    "modern": {
-      "colors": {
-        "primary": "#7c3aed",
-        "secondary": "#6b7280",
-        "accent": "#f59e0b"
-      },
-      "fonts": {
-        "body": "'Inter', system-ui, sans-serif",
-        "heading": "'Inter', system-ui, sans-serif",
-        "mono": "'JetBrains Mono', ui-monospace, monospace"
-      }
-    },
-    "minimal": {
-      "colors": {
-        "primary": "#374151",
-        "secondary": "#9ca3af",
-        "accent": "#111827"
-      },
-      "fonts": {
-        "body": "Georgia, 'Times New Roman', serif",
-        "heading": "Georgia, 'Times New Roman', serif",
-        "mono": "'Courier New', monospace"
-      }
-    }
+  "scraping": {
+    "enable_website_enrichment": true,
+    "max_websites_per_profile": 5,
+    "website_cache_duration_hours": 48,
+    "firecrawl_timeout_seconds": 30,
+    "extract_technologies": true,
+    "extract_skills": true,
+    "extract_experience": true
   }
 } 

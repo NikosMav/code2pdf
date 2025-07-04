@@ -1,70 +1,36 @@
 # GitHub Scraper
 
-Generate professional HTML CVs from GitHub profiles with comprehensive analytics.
+Generate professional CVs from GitHub profiles with comprehensive data scraping and analytics.
 
 ## 🚀 Features
 
-### **Enhanced Output Formats**
+### **Core Functionality**
 
-- **📄 Markdown** - GitHub-compatible markdown
-- **🌐 HTML** - Styled HTML with responsive design (default)
-- **🎨 Multiple Themes** - Professional, Modern, and Minimal designs
-
-### **Data-Driven Insights**
-
+- **📄 Markdown Output** - Professional, GitHub-compatible markdown with rich data analysis
+- **🎯 Data-Focused** - Comprehensive data scraping and insights without presentation complexity
 - **📊 Activity Scoring** - Comprehensive scoring based on stars, forks, and activity
 - **💻 Language Analysis** - Programming language expertise with proficiency levels
-- **🚀 Project Showcase** - Smart repository selection with diversity
-- **📈 Contribution Patterns** - Community engagement and development activity
-- **🔍 Repository Trends** - Creation patterns and maintenance insights
+- **🚀 Project Showcase** - Smart repository selection with diversity analysis
 
-### **Advanced Features**
+### **Website Enrichment**
+
+- **📝 Personal Website Integration** - Automatically discovers and analyzes personal websites
+- **🔍 Smart URL Discovery** - Finds websites from GitHub profile, bio, and repositories
+- **🤖 Firecrawl Integration** - Uses advanced web scraping with AI-powered extraction
+- **📊 Enhanced Profiles** - Adds skills, experience, and projects from personal websites
+- **🛡️ Intelligent Filtering** - Focuses on personal websites, filters out social media
+
+### **Technical Features**
 
 - **⚡ Intelligent Caching** - API response caching for faster subsequent runs
 - **🎛️ Configurable Options** - Extensive customization via config files
 - **🔄 Rate Limit Friendly** - Optimized API usage with GitHub token support
-- **📱 Responsive Design** - Mobile-friendly HTML outputs
-- **🎯 Verbose Mode** - Detailed progress reporting
-
-### **🌐 Website Enrichment (New!)**
-
-- **📝 Personal Website Integration** - Automatically discovers and analyzes personal websites
-- **🔍 Smart URL Discovery** - Finds websites from GitHub profile, bio, and repositories
-- **🤖 MCP Firecrawl Integration** - Uses advanced web scraping with AI-powered extraction
-- **📊 Enhanced Profiles** - Adds skills, experience, and projects from personal websites
-- **🛡️ Intelligent Filtering** - Focuses on personal websites, filters out social media
-- **🔄 Graceful Fallback** - Works perfectly even when no websites are found
+- **🔍 Deep Analysis** - Comprehensive profile and repository analysis
+- **📁 Organized Output** - Automatic folder organization by user and date
 
 ## 📦 Installation
 
-### Basic Installation (Markdown + HTML)
-
-```bash
-# Install from PyPI (recommended)
-pipx install github-scraper
-
-# Or install with pip
-pip install github-scraper
-```
-
-### Full Installation (All Features)
-
-```bash
-# Install with all optional features
-pipx install "github-scraper[all]"
-
-# Or with pip
-pip install "github-scraper[all]"
-```
-
-### Optional Features
-
-```bash
-# YAML configuration support
-pip install "github-scraper[yaml]"
-```
-
-### Development Installation
+### From Source (Recommended)
 
 ```bash
 git clone https://github.com/nikosmav/github-scraper.git
@@ -72,159 +38,109 @@ cd github-scraper
 pip install -e ".[dev,all]"
 ```
 
+### With Optional Features
+
+```bash
+# Install with YAML configuration support
+pip install -e ".[yaml]"
+
+# Install with all optional features
+pip install -e ".[all]"
+```
+
 ## 🚀 Quick Start
 
 ### Basic Usage
 
 ```bash
-# Generate HTML CV (default) - creates organized folder
-github-scraper build nikosmav
+# Generate comprehensive CV with data analysis
+github-scraper build username
 
-# Generate markdown with modern theme in organized folder
-github-scraper build nikosmav --format markdown --theme modern
+# Generate with website enrichment (requires Firecrawl API key)
+github-scraper build username --enrich-websites --verbose
 
-# Generate all formats in organized folder
-github-scraper build nikosmav --format all --theme professional
+# Generate with GitHub token for higher rate limits
+github-scraper build username --token YOUR_GITHUB_TOKEN
 ```
 
-### With GitHub Token (Recommended)
+### 🌐 Website Enrichment Setup
+
+Website enrichment requires a Firecrawl API key:
+
+1. **Get API Key**: Sign up at [Firecrawl](https://firecrawl.dev/) for a free API key
+2. **Set Environment Variable**:
 
 ```bash
-# Higher rate limits and better data
-github-scraper build nikosmav --token YOUR_GITHUB_TOKEN --format html --verbose
+# Linux/macOS
+export FIRECRAWL_API_KEY="your_firecrawl_api_key_here"
+
+# Windows
+set FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+```
+
+3. **Use with enrichment**:
+
+```bash
+github-scraper build username --enrich-websites --verbose
 ```
 
 ### Advanced Usage
 
 ```bash
 # Custom output directory
-github-scraper build nikosmav --output-dir my_cvs --theme modern
+github-scraper build username --output-dir team_profiles
 
 # Single file output (bypasses organization)
-github-scraper build nikosmav --output my_resume.html --theme minimal
+github-scraper build username --output resume.md
 
-# Disable caching
-github-scraper build nikosmav --no-cache --format html
+# Disable caching for fresh data
+github-scraper build username --no-cache
+
+# Clean up old generated files
+github-scraper clean --days 7
 ```
 
-### 🌐 Website Enrichment
+## 📂 Output Organization
 
-**Setup Required:**
-For website enrichment to work, you need to set up your Firecrawl API key:
-
-```bash
-# Set your Firecrawl API key as an environment variable
-export FIRECRAWL_API_KEY="your_firecrawl_api_key_here"
-
-# On Windows:
-set FIRECRAWL_API_KEY=your_firecrawl_api_key_here
-```
-
-Get your free API key from [Firecrawl](https://firecrawl.dev/).
-
-**Usage:**
-
-```bash
-# Generate CV with website enrichment (analyzes personal websites)
-github-scraper build nikosmav --enrich-websites --verbose
-
-# Enhanced CV with all formats
-github-scraper build nikosmav --enrich-websites --format all --theme modern
-
-# Website enrichment with custom output
-github-scraper build nikosmav --enrich-websites --output-dir enhanced_cvs
-```
-
-### File Organization
-
-By default, `github-scraper` creates organized folders:
+By default, files are organized in structured folders:
 
 ```
 generated_cvs/
-├── nikosmav_2024-01-15/
-│   ├── nikosmav_cv_professional.md
-│   └── nikosmav_cv_professional.html
-└── johndoe_2024-01-16/
-    ├── johndoe_cv_modern.md
-    └── johndoe_cv_modern.html
+├── username_2024-01-15/
+│   └── username_comprehensive_cv.md
+└── another_user_2024-01-16/
+    └── another_user_comprehensive_cv.md
 ```
-
-**Folder Structure:**
-
-- `generated_cvs/{username}_{date}/` - Organized by user and date
-- Each folder contains all generated formats for that user
-- Clean separation prevents file conflicts
-- Easy to find and manage multiple CV versions
 
 **Organization Options:**
 
-```bash
-# Default: organized folder with date
-github-scraper build nikosmav
-# → generated_cvs/nikosmav_2024-01-15/nikosmav_cv_professional.html
-
-# Custom directory
-github-scraper build nikosmav --output-dir my_team_cvs
-# → my_team_cvs/nikosmav_cv_professional.html
-
-# Single file (bypasses organization)
-github-scraper build nikosmav --output john_resume.html
-# → john_resume.html (current directory)
-
-# Multiple users in same directory
-github-scraper build nikosmav --output-dir company_cvs
-github-scraper build johndoe --output-dir company_cvs
-# → company_cvs/nikosmav_cv_professional.html
-# → company_cvs/johndoe_cv_professional.html
-```
-
-## 🎨 Themes
-
-### Professional (Default)
-
-- Clean, corporate design
-- Blue color scheme
-- Perfect for traditional industries
-
-### Modern
-
-- Contemporary design with gradients
-- Purple and orange accents
-- Great for tech and creative fields
-
-### Minimal
-
-- Simple, text-focused layout
-- Serif typography
-- Ideal for academic and research roles
+- **Default**: `generated_cvs/{username}_{date}/`
+- **Custom directory**: `--output-dir custom_folder/`
+- **Single file**: `--output filename.md` (bypasses organization)
 
 ## ⚙️ Configuration
 
-Create a `github-scraper.json` or `github-scraper.yaml` file in your project directory or home folder:
+Create a `github-scraper.json` or `github-scraper.yaml` file:
 
 ```json
 {
   "github": {
     "cache_duration_hours": 2,
-    "max_repos": 15,
+    "max_repos": 20,
     "include_forks": false
   },
   "cv": {
-    "max_featured_repos": 10,
+    "max_featured_repos": 12,
     "include_insights": true,
     "activity_threshold_days": 90
   },
   "output": {
-    "default_format": "html",
     "include_timestamp": true
   },
-  "themes": {
-    "professional": {
-      "colors": {
-        "primary": "#2563eb",
-        "accent": "#059669"
-      }
-    }
+  "scraping": {
+    "enable_website_enrichment": true,
+    "max_websites_per_profile": 5,
+    "website_cache_duration_hours": 48
   }
 }
 ```
@@ -237,101 +153,76 @@ Create a `github-scraper.json` or `github-scraper.yaml` file in your project dir
 github-scraper build <username> [OPTIONS]
 
 Options:
-  -o, --output PATH          Output file path or directory
+  -o, --output PATH          Output file path
   -d, --output-dir PATH      Output directory for organized files
-  -f, --format FORMAT        Output format: markdown|html|all
-  -t, --theme THEME          Theme: professional|modern|minimal
-  --enrich-websites          Enable website enrichment with MCP Firecrawl
+  --enrich-websites          Enable website enrichment
   --token TEXT               GitHub personal access token
   -c, --config PATH          Configuration file path
   --cache/--no-cache         Enable/disable caching
   -v, --verbose              Enable verbose output
 ```
 
-### `clean` - Clean Up Old Files
+### Other Commands
 
 ```bash
-github-scraper clean [username] [OPTIONS]
+# Clean up old files
+github-scraper clean [username] --days 7 --yes
 
-Options:
-  --days INTEGER             Remove folders older than N days (default: 7)
-  -y, --yes                  Skip confirmation prompt
-```
-
-### `config` - Show Configuration Help
-
-```bash
+# Show configuration help
 github-scraper config
-```
 
-### `doctor` - System Diagnostic
-
-```bash
+# System diagnostic
 github-scraper doctor
 ```
+
+## 🔑 GitHub API Setup
+
+**Rate Limits:**
+
+- **Without token**: 60 requests/hour (testing only)
+- **With token**: 5,000 requests/hour (recommended)
+
+**Setup:**
+
+1. Go to [GitHub Settings > Tokens](https://github.com/settings/tokens)
+2. Generate a new token with `public_repo` scope
+3. Use: `github-scraper build username --token YOUR_TOKEN`
+
+## 🎯 Output Content
+
+Generated CVs include:
+
+### Data-Driven Content
+
+- **Profile Overview**: Enhanced with website data when available
+- **Technical Skills**: Programming languages with expertise levels
+- **Featured Projects**: Intelligently selected repositories with metrics
+- **Activity Analysis**: Contribution patterns and engagement metrics
+
+### Analytics & Insights
+
+- **Activity Scoring**: Based on stars, forks, and recent activity
+- **Language Proficiency**: Calculated from repository data
+- **Contribution Patterns**: Community engagement analysis
+- **Repository Trends**: Creation and maintenance insights
 
 ## 🔧 Development
 
 ### Running Tests
 
 ```bash
-# Install development dependencies
 pip install -e ".[dev]"
-
-# Run tests
 pytest
-
-# Run with coverage
 pytest --cov=github_scraper --cov-report=html
 ```
 
 ### Code Quality
 
 ```bash
-# Format code
-black src/ tests/
-
-# Lint code
-ruff check src/ tests/
-
-# Type checking
-mypy src/
+black src/ tests/        # Format code
+ruff check src/ tests/    # Lint code
+mypy src/                 # Type checking
 ```
-
-Your generated CV will include:
-
-```markdown
-# John Developer
-
-_Python Developer with 5.2 years on GitHub_
-
-**Tech Corp** 📍 San Francisco, CA
-
-## 📊 Professional Summary
-
-**Activity Score:** 78/100 | **Impact Level:** High | **Recent Activity:** High
-
-- **5.2 years** of experience on GitHub since 2019
-- **25 original repositories** with **342 total stars** earned
-- **8 programming languages** in portfolio
-- **12 projects** actively maintained
-- Average **13.7 stars per repository**
-```
-
-## 🚫 Rate Limits
-
-| Authentication | Requests/Hour | Recommended Usage  |
-| -------------- | ------------- | ------------------ |
-| No Token       | 60            | Light testing only |
-| Personal Token | 5,000         | Production use     |
-
-Get your token at: https://github.com/settings/tokens
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Commit** changes: `git commit -m 'Add amazing feature'`
-4. **Push** to branch: `git push origin feature/amazing-feature`
-5. **Open** a Pull Request
 
 ## 📄 License
 
@@ -342,13 +233,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **PyGithub** for GitHub API integration
 - **Jinja2** for template rendering
 - **Typer** for the CLI interface
+- **Firecrawl** for website enrichment capabilities
 
 ---
 
-## 📞 Support
-
-- **Documentation**: [Full documentation](https://github.com/nikosmav/github-scraper)
-- **Issues**: [Report bugs](https://github.com/nikosmav/github-scraper/issues)
-- **Discussions**: [Community discussions](https://github.com/nikosmav/github-scraper/discussions)
-
-_Generate your professional CV in seconds with GitHub Scraper!_ ✨
+_Generate professional CVs from GitHub profiles with comprehensive data analysis!_ ✨

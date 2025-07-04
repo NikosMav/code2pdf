@@ -9,14 +9,7 @@ from typing import Dict, List, Any, Optional
 import asyncio
 from urllib.parse import urlparse
 
-# Check for aiofiles availability
-try:
-    import aiofiles
 
-    AIOFILES_AVAILABLE = True
-except ImportError:
-    AIOFILES_AVAILABLE = False
-    aiofiles = None  # type: ignore
 
 # Cache configuration
 WEBSITE_CACHE_DIR = Path.home() / ".cache" / "github-scraper" / "websites"
@@ -38,32 +31,21 @@ def _is_website_cache_valid(cache_path: Path, max_age_hours: int = 24) -> bool:
     return cache_age < timedelta(hours=max_age_hours)
 
 
-async def _save_website_cache(data: Dict[str, Any], cache_path: Path) -> None:
-    """Save website data to cache file asynchronously."""
+def _save_website_cache(data: Dict[str, Any], cache_path: Path) -> None:
+    """Save website data to cache file."""
     try:
-        if AIOFILES_AVAILABLE:
-            async with aiofiles.open(cache_path, "w", encoding="utf-8") as f:
-                await f.write(json.dumps(data, default=str, indent=2))
-        else:
-            # Fallback to synchronous write
-            cache_path.write_text(
-                json.dumps(data, default=str, indent=2), encoding="utf-8"
-            )
+        cache_path.write_text(
+            json.dumps(data, default=str, indent=2), encoding="utf-8"
+        )
     except Exception:
         pass  # Ignore cache write errors
 
 
-async def _load_website_cache(cache_path: Path) -> Optional[Dict[str, Any]]:
-    """Load website data from cache file asynchronously."""
+def _load_website_cache(cache_path: Path) -> Optional[Dict[str, Any]]:
+    """Load website data from cache file."""
     try:
-        if AIOFILES_AVAILABLE:
-            async with aiofiles.open(cache_path, "r", encoding="utf-8") as f:
-                content = await f.read()
-                return json.loads(content)
-        else:
-            # Fallback to synchronous read
-            content = cache_path.read_text(encoding="utf-8")
-            return json.loads(content)
+        content = cache_path.read_text(encoding="utf-8")
+        return json.loads(content)
     except Exception:
         return None
 
@@ -211,23 +193,21 @@ def crawl_website_with_firecrawl(
     try:
         if not firecrawl_scrape_func:
             if verbose:
-                print(
-                    f"⚠️  Firecrawl not available, falling back to basic URL analysis for {url}"
-                )
-            return create_basic_website_data(url)
+                print(f"❌ Firecrawl not available, cannot scrape {url}")
+            return None
 
         if verbose:
             print(f"🕷️  Crawling website: {url}")
 
         # Configure scraping options for personal websites
-        # First extract general information
+        # First extract general information with broader scope
         scrape_result = firecrawl_scrape_func(
             url=url,
             formats=["markdown", "extract"],
             onlyMainContent=True,
             waitFor=5000,  # Wait for dynamic content (increased for MUI components)
             extract={
-                "prompt": "Extract personal and professional information including: name, title/role, skills, experience, education, projects, contact information, about/bio sections, and any other relevant career or personal details. For skills, focus on soft skills, methodologies, and practices (not technical tools).",
+                "prompt": "Extract comprehensive personal and professional information including: name, title/role, ALL skills (both technical and soft), experience, education, projects, services, contact information, about/bio sections, and any other relevant career or personal details. Include both technical skills (programming languages, frameworks, tools) and soft skills (methodologies, practices, competencies). Look specifically for 'Tech Stack', 'Technology Stack', 'Technologies Used', 'Built With', or similar sections that list technologies. IMPORTANT: Only extract information that is actually present on the website. Do not generate placeholder content, make assumptions, or hallucinate any information. If a field cannot be found, leave it empty rather than creating fictional content.",
                 "schema": {
                     "type": "object",
                     "properties": {
@@ -243,12 +223,22 @@ def crawl_website_with_firecrawl(
                         "skills": {
                             "type": "array",
                             "items": {"type": "string"},
-                            "description": "Soft skills, methodologies, practices, and competencies (e.g., Problem Solving, Team Leadership, Agile Development, UX Design, Project Management)",
+                            "description": "ALL skills including technical skills (CSS, JavaScript, React, etc.), soft skills, methodologies, and practices found on the website",
+                        },
+                        "technologies": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Technical technologies, programming languages, frameworks, tools, libraries, and platforms. Look for 'Tech Stack', 'Technology Stack', 'Technologies Used', 'Built With' sections",
+                        },
+                        "tech_stack": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Technologies specifically mentioned in 'Tech Stack', 'Technology Stack', 'Technologies Used', 'Built With', 'Stack', or similar sections",
                         },
                         "experience": {
                             "type": "array",
                             "items": {"type": "string"},
-                            "description": "Work experience and roles",
+                            "description": "Work experience, roles, and professional history",
                         },
                         "education": {
                             "type": "array",
@@ -264,6 +254,11 @@ def crawl_website_with_firecrawl(
                             "type": "array",
                             "items": {"type": "string"},
                             "description": "Services offered or areas of expertise",
+                        },
+                        "clients": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Past clients or companies worked with",
                         },
                         "contact": {
                             "type": "object",
@@ -283,7 +278,7 @@ def crawl_website_with_firecrawl(
             },
         )
 
-        # Then extract technologies with focused approach
+        # Then do a second pass specifically for technologies and skills with a more targeted approach
         if scrape_result:
             tech_result = firecrawl_scrape_func(
                 url=url,
@@ -291,25 +286,83 @@ def crawl_website_with_firecrawl(
                 onlyMainContent=True,
                 waitFor=5000,
                 extract={
-                    "prompt": "Extract all technologies, programming languages, frameworks, tools, libraries, and platforms mentioned on this website. Look for technology sections, chips, badges, tech stacks, and any technical tools. Include content from interactive elements like buttons and badges.",
+                    "prompt": "Extract ALL technologies, programming languages, frameworks, tools, libraries, platforms, and technical skills mentioned anywhere on this website. Look specifically for 'Tech Stack', 'Technology Stack', 'Technologies Used', 'Built With', 'Stack', 'Tools & Technologies', or similar sections. Also extract any soft skills, methodologies, or professional competencies. Be comprehensive and include everything, especially from technology listing sections. IMPORTANT: Only extract technologies and skills that are explicitly mentioned on the website. Do not generate placeholder content, make assumptions, or hallucinate any technologies. If no technologies are found in a section, leave it empty rather than creating fictional entries.",
                     "schema": {
                         "type": "object",
                         "properties": {
-                            "technologies": {
+                            "all_technologies": {
                                 "type": "array",
                                 "items": {"type": "string"},
-                                "description": "All technologies, programming languages, frameworks, tools, libraries, and platforms found",
+                                "description": "ALL technologies, programming languages, frameworks, tools, libraries, and platforms found anywhere on the website",
+                            },
+                            "tech_stack_items": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "Technologies specifically found in 'Tech Stack', 'Technology Stack', 'Technologies Used', 'Built With', 'Stack', or similar dedicated technology sections",
+                            },
+                            "all_skills": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "ALL skills including technical skills, soft skills, methodologies, and competencies found on the website",
                             }
                         },
                     },
                 },
             )
 
-            # Merge the technology data into the main result
-            if tech_result and "extract" in tech_result:
-                tech_data = tech_result["extract"]
-                if "technologies" in tech_data and "extract" in scrape_result:
-                    scrape_result["extract"]["technologies"] = tech_data["technologies"]
+            # Third pass specifically for client companies
+            client_result = firecrawl_scrape_func(
+                url=url,
+                formats=["extract"],
+                onlyMainContent=True,
+                waitFor=5000,
+                extract={
+                    "prompt": "Look specifically for a 'Clients' section, portfolio section, or any area showing past work relationships on this website. Extract all company names, brand names, organization names, or client names mentioned. Look for company logos, client showcases, or any business relationships. Include names from image titles, alt text, or any visible company/brand identifiers. IMPORTANT: Only extract client/company names that are explicitly mentioned or shown on the website. Do not generate placeholder content, make assumptions, or hallucinate any company names. If no clients or companies are found, leave the list empty rather than creating fictional entries.",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "client_companies": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "Names of client companies, organizations, brands, or business relationships found on the website",
+                            }
+                        },
+                    },
+                },
+            )
+
+            # Merge the technology, skills, and client data into the main result
+            if "extract" in scrape_result:
+                # Merge technologies from tech_result
+                if tech_result and "extract" in tech_result:
+                    tech_data = tech_result["extract"]
+                    existing_technologies = scrape_result["extract"].get("technologies", [])
+                    new_technologies = tech_data.get("all_technologies", [])
+                    tech_stack_items = tech_data.get("tech_stack_items", [])
+                    
+                    # Also get tech_stack from main extraction
+                    main_tech_stack = scrape_result["extract"].get("tech_stack", [])
+                    
+                    # Combine all technology sources
+                    all_technologies = list(set(existing_technologies + new_technologies + tech_stack_items + main_tech_stack))
+                    scrape_result["extract"]["technologies"] = all_technologies
+                    
+                    # Store tech stack items separately for reference
+                    scrape_result["extract"]["tech_stack"] = list(set(tech_stack_items + main_tech_stack))
+                    
+                    # Merge skills
+                    existing_skills = scrape_result["extract"].get("skills", [])
+                    new_skills = tech_data.get("all_skills", [])
+                    all_skills = list(set(existing_skills + new_skills))
+                    scrape_result["extract"]["skills"] = all_skills
+                
+                # Merge clients from client_result
+                if client_result and "extract" in client_result:
+                    client_data = client_result["extract"]
+                    existing_clients = scrape_result["extract"].get("clients", [])
+                    new_clients = client_data.get("client_companies", [])
+                    all_clients = list(set(existing_clients + new_clients))
+                    scrape_result["extract"]["clients"] = all_clients
 
         if scrape_result and "data" in scrape_result:
             return process_scraped_data(scrape_result["data"], url, verbose)
@@ -319,51 +372,9 @@ def crawl_website_with_firecrawl(
     except Exception as e:
         if verbose:
             print(f"❌ Error crawling {url}: {str(e)}")
-        return create_basic_website_data(url)
+        return None
 
     return None
-
-
-def create_basic_website_data(url: str) -> Dict[str, Any]:
-    """Create basic website data when Firecrawl is not available."""
-    parsed = urlparse(url)
-    domain = parsed.netloc.lower()
-
-    return {
-        "url": url,
-        "scraped_at": datetime.now().isoformat(),
-        "content": {
-            "raw_markdown": f"# {domain}\n\nPersonal website: {url}",
-            "extracted_data": {
-                "name": "",
-                "title": "",
-                "bio": f"Personal website at {domain}",
-                "skills": [],
-                "experience": [],
-                "projects": [],
-                "contact": {"website": url},
-            },
-        },
-        "insights": {
-            "personal_info": {
-                "name": "",
-                "title": "",
-                "bio": f"Personal website at {domain}",
-                "contact": {"website": url},
-                "social": {},
-            },
-            "professional": {
-                "skills": [],
-                "experience": [],
-                "education": [],
-                "projects": [],
-                "services": [],
-                "achievements": [],
-            },
-            "website_type": "personal_portfolio",
-            "technologies_mentioned": [],
-        },
-    }
 
 
 def process_scraped_data(
@@ -399,6 +410,7 @@ def process_scraped_data(
                 "education": extracted.get("education", []),
                 "projects": extracted.get("projects", []),
                 "services": extracted.get("services", []),
+                "clients": extracted.get("clients", []),
                 "achievements": extracted.get("achievements", []),
             },
         }
@@ -428,7 +440,7 @@ def process_scraped_data(
     else:
         insights_dict["website_type"] = "general"
 
-    # Extract key technologies mentioned
+    # Extract key technologies mentioned in markdown content as backup
     tech_keywords = [
         "python",
         "javascript",
@@ -458,11 +470,126 @@ def process_scraped_data(
         "ai",
         "data science",
         "blockchain",
+        "css",
+        "html",
+        "scss",
+        "sass",
+        "bootstrap",
+        "material",
+        "figma",
+        "sketch",
+        "photoshop",
+        "git",
+        "github",
+        "firebase",
+        "ionic",
+        "stencil",
+        "jquery",
+        "ajax",
+        "json",
+        "sql",
+        "mongodb",
+        "jest",
+        "storybook",
+        "webpack",
+        "npm",
+        "yarn",
+        "babel",
+        "eslint",
+        "next.js",
+        "nextjs",
+        "express",
+        "expressjs",
+        "tailwind",
+        "tailwindcss",
+        "postgress",
+        "postgresql",
+        "websockets",
+        "socket.io",
+        "socketio",
+        "jupiter",
+        "solana",
+        "graphql",
+        "apollo",
+        "redux",
+        "mobx",
+        "gatsby",
+        "nuxt",
+        "svelte",
+        "laravel",
+        "django",
+        "flask",
+        "spring",
+        "dotnet",
+        ".net",
+        "unity",
+        "unreal",
+        "tensorflow",
+        "pytorch",
+        "keras",
+        "pandas",
+        "numpy",
+        "material ui",
+        "ant design",
+        "chakra ui",
+        "styled components",
+        "emotion",
     ]
 
     found_technologies = [tech for tech in tech_keywords if tech in markdown_content]
-    if found_technologies:
-        insights_dict["technologies_mentioned"] = found_technologies
+    
+    # Look for tech stack patterns in markdown content
+    tech_stack_patterns = [
+        "tech stack:",
+        "technology stack:",
+        "technologies used:",
+        "built with:",
+        "stack:",
+        "tools & technologies:",
+        "tools and technologies:",
+        "technologies:",
+        "framework:",
+        "frameworks:",
+        "programming languages:",
+        "languages:",
+    ]
+    
+    tech_stack_technologies = []
+    for pattern in tech_stack_patterns:
+        if pattern in markdown_content:
+            # Find the line with the pattern and extract technologies from it
+            lines = markdown_content.split('\n')
+            for i, line in enumerate(lines):
+                if pattern in line.lower():
+                    # Check current line and next few lines for technologies
+                    tech_line = line.lower()
+                    for j in range(i+1, min(i+3, len(lines))):
+                        tech_line += " " + lines[j].lower()
+                    
+                    # Extract technologies from this section
+                    for tech in tech_keywords:
+                        if tech in tech_line and tech not in tech_stack_technologies:
+                            tech_stack_technologies.append(tech)
+                    break
+    
+    # Combine all found technologies
+    all_found_technologies = list(set(found_technologies + tech_stack_technologies))
+    
+    if all_found_technologies:
+        insights_dict["technologies_mentioned"] = all_found_technologies
+
+    # Mark as having professional content if we found substantial data
+    professional_data = processed.get("insights", {}).get("professional", {})
+    has_content = any([
+        professional_data.get("skills"),
+        professional_data.get("technologies"),
+        professional_data.get("experience"),
+        professional_data.get("projects"),
+        professional_data.get("services"),
+        professional_data.get("clients"),
+        found_technologies
+    ])
+    insights_dict["has_professional_content"] = has_content
 
     if verbose:
         print(f"✅ Processed website data from {url}")
@@ -470,8 +597,20 @@ def process_scraped_data(
             print(f"   Found: {extracted['name']}")
         if extracted.get("title"):
             print(f"   Title: {extracted['title']}")
+        if extracted.get("skills"):
+            print(f"   Skills: {len(extracted['skills'])} items")
+        if extracted.get("technologies"):
+            print(f"   Technologies: {len(extracted['technologies'])} items")
+        if extracted.get("tech_stack"):
+            print(f"   Tech Stack: {len(extracted['tech_stack'])} items")
+            if extracted['tech_stack']:
+                print(f"   Tech Stack items: {', '.join(extracted['tech_stack'][:5])}")
+        if extracted.get("clients"):
+            print(f"   Clients: {len(extracted['clients'])} items")
+        if tech_stack_technologies:
+            print(f"   Tech Stack from content: {', '.join(tech_stack_technologies[:5])}")
         if found_technologies:
-            print(f"   Technologies: {', '.join(found_technologies[:5])}")
+            print(f"   Additional technologies from content: {', '.join(found_technologies[:5])}")
 
     return processed
 
@@ -498,7 +637,7 @@ async def enrich_profile_with_websites(
     }
 
     # Process each URL
-    for url in urls[:3]:  # Limit to 3 websites to avoid excessive crawling
+    for url in urls[:1]:  # Only process the first (personal) website
         cache_path = _get_website_cache_path(url)
 
         # Check cache first
@@ -506,7 +645,7 @@ async def enrich_profile_with_websites(
         if use_cache and _is_website_cache_valid(cache_path):
             if verbose:
                 print(f"📦 Loading cached data for {url}")
-            website_data = await _load_website_cache(cache_path)
+            website_data = _load_website_cache(cache_path)
 
         # Crawl if not cached
         if not website_data:
@@ -521,7 +660,7 @@ async def enrich_profile_with_websites(
 
             # Cache the result
             if website_data and use_cache:
-                await _save_website_cache(website_data, cache_path)
+                _save_website_cache(website_data, cache_path)
 
         if website_data:
             enriched_profile["website_enrichment"]["crawled_websites"].append(
@@ -551,6 +690,7 @@ def generate_enrichment_summary(
             "additional_experience": [],
             "additional_projects": [],
             "professional_services": [],
+            "clients": [],
             "website_types": [],
             "technologies_mentioned": set(),
             "contact_info": {},
@@ -595,6 +735,10 @@ def generate_enrichment_summary(
         services = professional.get("services")
         if services:
             summary["combined_insights"]["professional_services"].extend(services)
+
+        clients = professional.get("clients")
+        if clients:
+            summary["combined_insights"]["clients"].extend(clients)
 
         # Collect personal information
         personal: Dict[str, Any] = insights.get("personal_info", {})
@@ -666,7 +810,7 @@ async def enrich_profile_with_websites_sync(
     }
 
     # Process each URL
-    for url in urls[:3]:  # Limit to 3 websites to avoid excessive crawling
+    for url in urls[:1]:  # Only process the first (personal) website
         cache_path = _get_website_cache_path(url)
 
         # Check cache first
@@ -674,7 +818,7 @@ async def enrich_profile_with_websites_sync(
         if use_cache and _is_website_cache_valid(cache_path):
             if verbose:
                 print(f"📦 Loading cached data for {url}")
-            website_data = await _load_website_cache(cache_path)
+            website_data = _load_website_cache(cache_path)
 
         # Crawl if not cached
         if not website_data:
@@ -689,7 +833,7 @@ async def enrich_profile_with_websites_sync(
 
             # Cache the result
             if website_data and use_cache:
-                await _save_website_cache(website_data, cache_path)
+                _save_website_cache(website_data, cache_path)
 
         if website_data:
             enriched_profile["website_enrichment"]["crawled_websites"].append(

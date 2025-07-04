@@ -20,7 +20,7 @@ from github_scraper.website_enrichment import (
     sync_enrich_profile_with_websites,
     is_valid_personal_website,
 )
-from github_scraper.generator import render_markdown, render_html
+from github_scraper.generator import render_markdown
 from github_scraper.config import DEFAULT_CONFIG
 
 
@@ -295,7 +295,7 @@ def analyze_profile_websites(username: str, verbose: bool = True) -> Dict[str, A
 
 
 def generate_enhanced_cv_for_profile(
-    analysis_result: Dict[str, Any], output_format: str = "markdown"
+    analysis_result: Dict[str, Any]
 ) -> bool:
     """
     Generate enhanced CV for a profile analysis result.
@@ -324,18 +324,11 @@ def generate_enhanced_cv_for_profile(
         else:
             enriched_profile = profile_data
 
-        # Generate files
+        # Generate comprehensive CV
         files_generated = []
-
-        if output_format in ["markdown", "all"]:
-            md_file = output_dir / f"{username}_cv_enhanced.md"
-            render_markdown(enriched_profile, md_file, "professional", DEFAULT_CONFIG)
-            files_generated.append(md_file)
-
-        if output_format in ["html", "all"]:
-            html_file = output_dir / f"{username}_cv_enhanced.html"
-            render_html(enriched_profile, html_file, "modern", DEFAULT_CONFIG)
-            files_generated.append(html_file)
+        markdown_file = output_dir / f"{username}_comprehensive_cv.md"
+        render_markdown(enriched_profile, markdown_file, DEFAULT_CONFIG)
+        files_generated.append(markdown_file)
 
         print(f"✅ Generated CV files for {username}:")
         for file_path in files_generated:
@@ -387,7 +380,7 @@ def run_multiple_profiles_test(usernames: List[str]) -> Dict[str, Any]:
                     ].get("additional_skills", 0)
 
         # Generate CV
-        if generate_enhanced_cv_for_profile(analysis, "markdown"):
+        if generate_enhanced_cv_for_profile(analysis):
             summary_stats["cvs_generated"] += 1
 
         # Brief pause between profiles
@@ -510,7 +503,7 @@ def main():
         print(f"   Total profile directories: {len(profile_dirs)}")
 
         for profile_dir in sorted(profile_dirs):
-            files = list(profile_dir.glob("*.md")) + list(profile_dir.glob("*.html"))
+            files = list(profile_dir.glob("*.md"))
             total_size = sum(f.stat().st_size for f in files) / 1024
             print(f"   📂 {profile_dir.name}: {len(files)} files ({total_size:.1f}KB)")
 

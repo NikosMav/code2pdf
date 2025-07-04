@@ -4,7 +4,7 @@ requires = ["setuptools", "wheel"]
 [project]
 name = "github-scraper"
 version = "0.0.1"
-description = "Generate professional HTML CVs from GitHub profiles with comprehensive analytics"
+description = "Generate professional CVs from GitHub profiles with comprehensive data scraping and analytics"
 authors = [{name="Nikos Mavridis"}]
 readme = "README.md"
 license = {text = "MIT"}
@@ -12,10 +12,6 @@ dependencies = [
     "typer>=0.7",
     "PyGithub>=2.3",
     "Jinja2>=3.1",
-    "markdown>=3.5",
-    "pygments>=2.16",
-    "aiohttp>=3.9",
-    "aiofiles>=23.2",
     "httpx>=0.24",
 ]
 
@@ -41,6 +37,5 @@ dev = [
     "black>=23.0",
     "ruff>=0.1",
     "mypy>=1.6",
-    "types-markdown>=3.5",
     "types-PyYAML>=6.0",
 ]

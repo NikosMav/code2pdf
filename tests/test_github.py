@@ -1,4 +1,4 @@
-"""Tests for GitHub module functionality."""
+"""Tests for GitHub module functionality with focus on data scraping and analysis."""
 
 import pytest
 from unittest.mock import Mock, patch
@@ -80,9 +80,9 @@ class TestLanguageAnalysis:
             },  # 5 repos with good stars = Expert
             {
                 "language": "JavaScript",
-                "stars": 2,
+                "stars": 1,
                 "size": 200,
-            },  # Low stars, few repos = Beginner
+            },  # Very low stars, few repos = Beginner
         ]
         result = analyze_languages(repos)
         assert result["expertise_levels"]["Python"] == "Expert"

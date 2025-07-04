@@ -1,26 +1,15 @@
 import typer
 from pathlib import Path
 from typing import Optional
-from enum import Enum
 from datetime import datetime, timedelta
 
 from .github import fetch_profile
-from .generator import render_markdown, render_html
+from .generator import render_markdown
 from .config import load_config, DEFAULT_CONFIG
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
 
-class OutputFormat(str, Enum):
-    markdown = "markdown"
-    html = "html"
-    all = "all"
-
-
-class TemplateTheme(str, Enum):
-    professional = "professional"
-    modern = "modern"
-    minimal = "minimal"
 
 
 def create_output_directory(username: str, output_dir: Optional[Path] = None) -> Path:
@@ -46,12 +35,8 @@ def build(
     output_dir: Optional[Path] = typer.Option(
         None, "--output-dir", "-d", help="Output directory for generated files"
     ),
-    format: OutputFormat = typer.Option(
-        OutputFormat.html, "--format", "-f", help="Output format"
-    ),
-    theme: TemplateTheme = typer.Option(
-        TemplateTheme.professional, "--theme", "-t", help="CV template theme"
-    ),
+
+
     token: Optional[str] = typer.Option(
         None, "--token", help="GitHub token for higher rate limits"
     ),
@@ -70,7 +55,7 @@ def build(
         False, "--verbose", "-v", help="Enable verbose output"
     ),
 ):
-    """Build a professional CV from a GitHub profile with HTML and Markdown output formats."""
+    """Build a professional CV from a GitHub profile with comprehensive data scraping and analysis."""
 
     try:
         # Load configuration
@@ -86,6 +71,7 @@ def build(
             use_cache=cache,
             verbose=verbose,
             enrich_websites=enrich_websites,
+            config_data=config_data,
         )
 
         if verbose:
@@ -94,7 +80,7 @@ def build(
                 f"🏆 Total stars: {data['contribution_patterns']['total_stars_earned']}"
             )
 
-        typer.echo(f"✨ Generating CV for {data['name']} using {theme.value} theme...")
+        typer.echo(f"✨ Generating comprehensive CV for {data['name']} with data analysis...")
 
         # Create output directory
         if output and output.is_file():
@@ -109,7 +95,7 @@ def build(
             if verbose:
                 typer.echo(f"📁 Output directory: {output_directory}")
 
-        # Determine output file(s)
+        # Determine output file
         if custom_filename:
             # Single custom file specified
             base_name = (
@@ -117,57 +103,25 @@ def build(
                 if "." in custom_filename
                 else custom_filename
             )
-            if format == OutputFormat.all:
-                outputs = {
-                    "markdown": output_directory / f"{base_name}.md",
-                    "html": output_directory / f"{base_name}.html",
-                }
-            else:
-                ext = "md" if format == OutputFormat.markdown else format.value
-                if format == OutputFormat.markdown and custom_filename.endswith(".html"):
-                    # Auto-detect format from extension
-                    ext = "html"
-                    format = OutputFormat.html
-                outputs = {format.value: output_directory / f"{base_name}.{ext}"}
+            output_file = output_directory / f"{base_name}.md"
         else:
-            # Default organized filenames
-            base_name = f"{user}_cv_{theme.value}"
-            if format == OutputFormat.all:
-                outputs = {
-                    "markdown": output_directory / f"{base_name}.md",
-                    "html": output_directory / f"{base_name}.html",
-                }
-            else:
-                ext = "md" if format == OutputFormat.markdown else format.value
-                outputs = {format.value: output_directory / f"{base_name}.{ext}"}
+            # Default organized filename
+            base_name = f"{user}_comprehensive_cv"
+            output_file = output_directory / f"{base_name}.md"
 
-        # Generate output(s)
-        generated_files = []
-        for output_format, output_path in outputs.items():
-            try:
-                if output_format == "markdown":
-                    render_markdown(data, output_path, theme.value, config_data)
-                elif output_format == "html":
-                    render_html(data, output_path, theme.value, config_data)
-
-                generated_files.append(output_path)
-                if verbose:
-                    typer.echo(f"📄 Generated {output_format.upper()}: {output_path}")
-
-            except Exception as e:
-                typer.echo(
-                    f"❌ Failed to generate {output_format.upper()}: {str(e)}", err=True
-                )
-                continue
-
-        if generated_files:
-            typer.echo(f"✅ Successfully generated {len(generated_files)} file(s)")
+        # Generate markdown output
+        try:
+            render_markdown(data, output_file, config_data)
+            
+            file_size = output_file.stat().st_size / 1024  # Size in KB
+            typer.echo(f"✅ Successfully generated CV: {output_file.name} ({file_size:.1f}KB)")
             typer.echo(f"📁 Output directory: {output_directory.resolve()}")
-            for file in generated_files:
-                file_size = file.stat().st_size / 1024  # Size in KB
-                typer.echo(f"   → {file.name} ({file_size:.1f}KB)")
-        else:
-            typer.echo("❌ No files were generated successfully", err=True)
+            
+            if verbose:
+                typer.echo(f"📄 Generated Markdown: {output_file}")
+
+        except Exception as e:
+            typer.echo(f"❌ Failed to generate CV: {str(e)}", err=True)
             raise typer.Exit(1)
 
     except KeyboardInterrupt:
@@ -187,19 +141,18 @@ def build(
 def config():
     """Show current configuration and setup help."""
     typer.echo("🔧 GitHub Scraper Configuration")
-    typer.echo("\n📁 Available output formats:")
-    typer.echo("  • markdown (.md) - GitHub-compatible markdown")
-    typer.echo("  • html (.html) - Styled HTML with CSS (default)")
+    typer.echo("\n📁 Output format:")
+    typer.echo("  • markdown (.md) - GitHub-compatible markdown with comprehensive data analysis")
 
     typer.echo("\n📂 Output Organization:")
     typer.echo("  • Files are organized in generated_cvs/{username}_{date}/ folders")
     typer.echo("  • Use --output-dir to specify a custom directory")
     typer.echo("  • Use --output file.ext for single file output")
 
-    typer.echo("\n🎨 Available themes:")
-    typer.echo("  • professional - Clean, corporate style")
-    typer.echo("  • modern - Contemporary design with colors")
-    typer.echo("  • minimal - Simple, text-focused layout")
+    typer.echo("\n🎯 Focus:")
+    typer.echo("  • Comprehensive data scraping and analysis")
+    typer.echo("  • Professional markdown output with rich insights")
+    typer.echo("  • Website enrichment for complete profiles")
 
     typer.echo("\n🔑 GitHub Token Setup:")
     typer.echo("  1. Visit: https://github.com/settings/tokens")
@@ -208,7 +161,7 @@ def config():
 
     typer.echo("\n📊 Rate Limits:")
     typer.echo("  • Without token: 60 requests/hour")
-    typer.echo("  • With token: 5,000 requests/hour")
+    typer.echo("  • With token: 5,000 requests/hour (recommended for data scraping)")
 
 
 @app.command()
@@ -294,10 +247,7 @@ def doctor():
     else:
         typer.echo("❌ Jinja2: Missing")
 
-    if importlib.util.find_spec("markdown"):
-        typer.echo("✅ Markdown: Available")
-    else:
-        typer.echo("❌ Markdown: Missing")
+
 
     if importlib.util.find_spec("yaml"):
         typer.echo("✅ YAML config support: Available")
