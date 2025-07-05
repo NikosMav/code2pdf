@@ -28,6 +28,15 @@ Generate professional CVs from GitHub profiles with comprehensive data scraping 
 - **📋 Project Management** - Project board item creation and management activity
 - **💰 Sponsorship Status** - GitHub Sponsors enablement and funding opportunities
 
+### **LinkedIn Professional Enrichment**
+
+- **📎 Smart Profile Discovery** - Automatically finds LinkedIn profiles from GitHub bio and repositories
+- **🎓 Education Background** - Extracts degrees, institutions, and academic history
+- **🏆 Professional Certifications** - Captures certifications with issuing organizations and dates
+- **💼 Work Experience** - Professional positions, companies, and career progression
+- **🔗 Data Correlation** - Cross-references LinkedIn and GitHub data for consistency
+- **📊 Professional Analytics** - Enhanced archetype analysis with formal credentials
+
 ### **Technical Features**
 
 - **⚡ Intelligent Caching** - API response caching for faster subsequent runs
@@ -49,9 +58,6 @@ pip install -e ".[dev,all]"
 ### With Optional Features
 
 ```bash
-# Install with YAML configuration support
-pip install -e ".[yaml]"
-
 # Install with all optional features
 pip install -e ".[all]"
 ```
@@ -69,6 +75,9 @@ github-scraper build username --enrich-websites --verbose
 
 # Generate with deeper GitHub signals (requires GitHub token)
 github-scraper build username --include-deeper-signals --token YOUR_GITHUB_TOKEN
+
+# Generate with LinkedIn professional data (requires Firecrawl API key)
+github-scraper build username --include-linkedin --verbose
 
 # Generate full profile with all features
 github-scraper build username --full-profile --token YOUR_GITHUB_TOKEN
@@ -110,7 +119,36 @@ Deeper GitHub signals require a GitHub Personal Access Token for GraphQL API acc
 github-scraper build username --include-deeper-signals --token YOUR_GITHUB_TOKEN
 ```
 
-4. **Full profile mode** (includes everything):
+### 🔗 LinkedIn Enrichment Setup
+
+LinkedIn enrichment also uses the Firecrawl API for reliable data extraction:
+
+1. **API Key Required**: Uses the same Firecrawl API key as website enrichment
+2. **Set Environment Variable** (if not already set):
+
+```bash
+# Linux/macOS
+export FIRECRAWL_API_KEY="your_firecrawl_api_key_here"
+
+# Windows
+set FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+```
+
+3. **Use with LinkedIn enrichment**:
+
+```bash
+github-scraper build username --include-linkedin --verbose
+```
+
+**Note**: LinkedIn profiles must be publicly accessible and linked from the GitHub profile (bio, blog field, or repository descriptions). Supports multiple URL formats:
+
+- Full URLs: `https://linkedin.com/in/username`
+- Domain URLs: `linkedin.com/in/username`
+- Partial URLs: `in/username` (like `in/nikolaos-mavrapidis`)
+
+### 🚀 Full Profile Mode
+
+**Full profile mode** includes everything (website + LinkedIn + deeper signals):
 
 ```bash
 github-scraper build username --full-profile --token YOUR_GITHUB_TOKEN
@@ -173,7 +211,7 @@ github-scraper build username --refresh  # Same as --no-cache
 
 ## ⚙️ Configuration
 
-Create a `github-scraper.json` or `github-scraper.yaml` file:
+Create a `github-scraper.json` file:
 
 ```json
 {
@@ -183,7 +221,7 @@ Create a `github-scraper.json` or `github-scraper.yaml` file:
     "include_forks": false
   },
   "cv": {
-    "max_featured_repos": 12,
+    "max_featured_repos": 15,
     "include_insights": true,
     "activity_threshold_days": 90
   },
@@ -210,7 +248,8 @@ Options:
   -d, --output-dir PATH      Output directory for organized files
   --enrich-websites          Enable website enrichment
   --include-deeper-signals   Include deeper GitHub signals (PR reviews, issues, discussions, projects)
-  --full-profile             Include all features: website enrichment + deeper signals
+  --include-linkedin         Include LinkedIn professional profile data (headline, education, certifications)
+  --full-profile             Include all features: website enrichment + deeper signals + LinkedIn
   --token TEXT               GitHub personal access token
   -c, --config PATH          Configuration file path
   --cache/--no-cache         Enable/disable caching (GitHub profiles cached 1h, websites 24h)
@@ -250,8 +289,9 @@ Generated CVs include:
 
 ### Data-Driven Content
 
-- **Profile Overview**: Enhanced with website data when available
+- **Profile Overview**: Enhanced with website and LinkedIn data when available
 - **Technical Skills**: Programming languages with expertise levels
+- **Professional Credentials**: Education background and certifications from LinkedIn
 - **Featured Projects**: Intelligently selected repositories with metrics
 - **Activity Analysis**: Contribution patterns and engagement metrics
 
@@ -259,8 +299,10 @@ Generated CVs include:
 
 - **Activity Scoring**: Based on stars, forks, and recent activity
 - **Language Proficiency**: Calculated from repository data
+- **Professional Archetype**: Enhanced analysis including formal education and certifications
 - **Contribution Patterns**: Community engagement analysis
 - **Repository Trends**: Creation and maintenance insights
+- **Data Correlation**: Cross-platform consistency analysis (GitHub vs LinkedIn)
 
 ## 🔧 Development
 

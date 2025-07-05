@@ -27,7 +27,7 @@ def _is_cache_valid(cache_path: Path, max_age_hours: int = 2) -> bool:
 
 
 def _build_graphql_query(username: str) -> str:
-    """Build the GraphQL query to fetch deeper signals."""
+    """Build the enhanced GraphQL query to fetch comprehensive deeper signals."""
     return """
     query($username: String!) {
       user(login: $username) {
@@ -36,9 +36,32 @@ def _build_graphql_query(username: str) -> str:
         sponsorshipsAsMaintainer(first: 1) {
           totalCount
         }
-        pullRequests(first: 100, states: [MERGED, CLOSED]) {
+        sponsorshipsAsSponsor(first: 1) {
+          totalCount
+        }
+        contributionsCollection {
+          totalCommitContributions
+          totalIssueContributions
+          totalPullRequestContributions
+          totalPullRequestReviewContributions
+          restrictedContributionsCount
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                contributionCount
+                date
+              }
+            }
+          }
+        }
+        pullRequests(first: 100, states: [MERGED, CLOSED, OPEN]) {
           totalCount
           nodes {
+            title
+            state
+            createdAt
+            mergedAt
             reviews(first: 50) {
               totalCount
               nodes {
@@ -46,16 +69,46 @@ def _build_graphql_query(username: str) -> str:
                 author {
                   login
                 }
+                createdAt
               }
             }
+            reviewRequests(first: 10) {
+              totalCount
+              nodes {
+                requestedReviewer {
+                  ... on User {
+                    login
+                  }
+                }
+              }
+            }
+            commits(first: 1) {
+              totalCount
+            }
+            additions
+            deletions
+            changedFiles
           }
         }
         issues(first: 100, states: [OPEN, CLOSED]) {
           totalCount
           nodes {
+            title
             state
+            createdAt
+            closedAt
             author {
               login
+            }
+            assignees(first: 5) {
+              nodes {
+                login
+              }
+            }
+            labels(first: 10) {
+              nodes {
+                name
+              }
             }
             comments(first: 50) {
               totalCount
@@ -63,6 +116,7 @@ def _build_graphql_query(username: str) -> str:
                 author {
                   login
                 }
+                createdAt
               }
             }
           }
@@ -70,8 +124,13 @@ def _build_graphql_query(username: str) -> str:
         repositoryDiscussions(first: 100) {
           totalCount
           nodes {
+            title
+            createdAt
             author {
               login
+            }
+            category {
+              name
             }
             comments(first: 50) {
               totalCount
@@ -79,6 +138,7 @@ def _build_graphql_query(username: str) -> str:
                 author {
                   login
                 }
+                createdAt
               }
             }
           }
@@ -86,14 +146,41 @@ def _build_graphql_query(username: str) -> str:
         projectsV2(first: 100) {
           totalCount
           nodes {
+            title
+            createdAt
+            updatedAt
             items(first: 50) {
               totalCount
               nodes {
                 creator {
                   login
                 }
+                createdAt
               }
             }
+          }
+        }
+        followers(first: 1) {
+          totalCount
+        }
+        following(first: 1) {
+          totalCount
+        }
+        starredRepositories(first: 1) {
+          totalCount
+        }
+        watching(first: 1) {
+          totalCount
+        }
+        gists(first: 1) {
+          totalCount
+        }
+        organizations(first: 10) {
+          totalCount
+          nodes {
+            login
+            name
+            description
           }
         }
       }
@@ -102,7 +189,7 @@ def _build_graphql_query(username: str) -> str:
 
 
 def _process_graphql_response(data: Dict[str, Any], username: str) -> Dict[str, Any]:
-    """Process GraphQL response and calculate deeper signals."""
+    """Process comprehensive GraphQL response and calculate enhanced deeper signals."""
     if not data or not isinstance(data, dict):
         return {}
         
@@ -111,50 +198,165 @@ def _process_graphql_response(data: Dict[str, Any], username: str) -> Dict[str, 
     if not user_data or not isinstance(user_data, dict):
         return {}
     
-    # Process PR reviews
-    pr_reviews_total = 0
-    pr_reviews_approved = 0
-    pr_reviews_changes_requested = 0
+    # Initialize comprehensive response structure
+    deeper_signals = {
+        "contributions": {
+            "total_commits": 0,
+            "total_issues": 0,
+            "total_prs": 0,
+            "total_reviews": 0,
+            "restricted_contributions": 0,
+            "contribution_calendar": {},
+            "activity_intensity": "Low",
+        },
+        "pull_requests": {
+            "total": 0,
+            "merged": 0,
+            "closed": 0,
+            "open": 0,
+            "reviews_given": 0,
+            "reviews_received": 0,
+            "avg_pr_size": 0,
+            "collaboration_score": 0,
+        },
+        "issues": {
+            "opened": 0,
+            "closed": 0,
+            "comments_authored": 0,
+            "assigned_issues": 0,
+            "response_patterns": {},
+        },
+        "discussions": {
+            "threads_started": 0,
+            "comments_authored": 0,
+            "categories_engaged": [],
+        },
+        "projects": {
+            "items_added": 0,
+            "projects_created": 0,
+        },
+        "social_metrics": {
+            "followers": 0,
+            "following": 0,
+            "starred_repos": 0,
+            "watching": 0,
+            "gists": 0,
+            "organizations": [],
+        },
+        "sponsorship": {
+            "sponsors_enabled": False,
+            "sponsoring_others": 0,
+            "sponsored_projects": 0,
+        },
+        "professional_indicators": {
+            "collaboration_strength": "Low",
+            "community_engagement": "Low", 
+            "technical_leadership": "Low",
+            "consistency_score": 0,
+        }
+    }
     
+    # Process contribution collection
+    contributions = user_data.get("contributionsCollection", {}) or {}
+    if contributions:
+        deeper_signals["contributions"]["total_commits"] = contributions.get("totalCommitContributions", 0)
+        deeper_signals["contributions"]["total_issues"] = contributions.get("totalIssueContributions", 0)
+        deeper_signals["contributions"]["total_prs"] = contributions.get("totalPullRequestContributions", 0)
+        deeper_signals["contributions"]["total_reviews"] = contributions.get("totalPullRequestReviewContributions", 0)
+        deeper_signals["contributions"]["restricted_contributions"] = contributions.get("restrictedContributionsCount", 0)
+        
+        # Process contribution calendar
+        calendar = contributions.get("contributionCalendar", {}) or {}
+        if calendar:
+            deeper_signals["contributions"]["contribution_calendar"]["total"] = calendar.get("totalContributions", 0)
+            
+            # Calculate activity intensity
+            total_contrib = calendar.get("totalContributions", 0)
+            if total_contrib > 1000:
+                deeper_signals["contributions"]["activity_intensity"] = "Very High"
+            elif total_contrib > 500:
+                deeper_signals["contributions"]["activity_intensity"] = "High"
+            elif total_contrib > 200:
+                deeper_signals["contributions"]["activity_intensity"] = "Medium"
+            else:
+                deeper_signals["contributions"]["activity_intensity"] = "Low"
+    
+    # Process pull requests with enhanced metrics
     pull_requests = user_data.get("pullRequests", {}) or {}
     pr_nodes = pull_requests.get("nodes", []) or []
+    deeper_signals["pull_requests"]["total"] = pull_requests.get("totalCount", 0)
+    
+    pr_sizes = []
+    reviews_given = 0
+    reviews_received_total = 0
     
     for pr in pr_nodes:
         if not pr or not isinstance(pr, dict):
             continue
+            
+        state = pr.get("state", "")
+        if state == "MERGED":
+            deeper_signals["pull_requests"]["merged"] += 1
+        elif state == "CLOSED":
+            deeper_signals["pull_requests"]["closed"] += 1
+        elif state == "OPEN":
+            deeper_signals["pull_requests"]["open"] += 1
+        
+        # Calculate PR size
+        additions = pr.get("additions", 0) or 0
+        deletions = pr.get("deletions", 0) or 0
+        pr_size = additions + deletions
+        if pr_size > 0:
+            pr_sizes.append(pr_size)
+        
+        # Count reviews given by this user
         reviews = pr.get("reviews", {}) or {}
         review_nodes = reviews.get("nodes", []) or []
+        reviews_received_total += len(review_nodes)
         
         for review in review_nodes:
             if not review or not isinstance(review, dict):
                 continue
             author = review.get("author", {}) or {}
             if author and author.get("login") == username:
-                pr_reviews_total += 1
-                if review.get("state") == "APPROVED":
-                    pr_reviews_approved += 1
-                elif review.get("state") == "CHANGES_REQUESTED":
-                    pr_reviews_changes_requested += 1
+                reviews_given += 1
     
-    approval_ratio = pr_reviews_approved / max(pr_reviews_total, 1)
+    deeper_signals["pull_requests"]["reviews_given"] = reviews_given
+    deeper_signals["pull_requests"]["reviews_received"] = reviews_received_total
+    deeper_signals["pull_requests"]["avg_pr_size"] = round(sum(pr_sizes) / max(len(pr_sizes), 1)) if pr_sizes else 0
     
-    # Process issues
-    issues_opened = 0
-    issues_closed_by_user = 0
-    issue_comments_authored = 0
+    # Calculate collaboration score
+    total_prs = deeper_signals["pull_requests"]["total"]
+    if total_prs > 0:
+        collaboration_score = (reviews_given + reviews_received_total) / total_prs
+        deeper_signals["pull_requests"]["collaboration_score"] = round(collaboration_score, 2)
     
+    # Process issues with enhanced analysis
     issues = user_data.get("issues", {}) or {}
     issue_nodes = issues.get("nodes", []) or []
+    deeper_signals["issues"]["total"] = issues.get("totalCount", 0)
+    
+    assigned_count = 0
+    comments_by_user = 0
     
     for issue in issue_nodes:
         if not issue or not isinstance(issue, dict):
             continue
+            
         author = issue.get("author", {}) or {}
         if author and author.get("login") == username:
-            issues_opened += 1
             if issue.get("state") == "CLOSED":
-                issues_closed_by_user += 1
+                deeper_signals["issues"]["closed"] += 1
+            else:
+                deeper_signals["issues"]["opened"] += 1
         
+        # Check assignments
+        assignees = issue.get("assignees", {}) or {}
+        assignee_nodes = assignees.get("nodes", []) or []
+        if any(assignee.get("login") == username for assignee in assignee_nodes):
+            assigned_count += 1
+        
+        # Count comments by user
         comments = issue.get("comments", {}) or {}
         comment_nodes = comments.get("nodes", []) or []
         for comment in comment_nodes:
@@ -162,22 +364,33 @@ def _process_graphql_response(data: Dict[str, Any], username: str) -> Dict[str, 
                 continue
             comment_author = comment.get("author", {}) or {}
             if comment_author and comment_author.get("login") == username:
-                issue_comments_authored += 1
+                comments_by_user += 1
+    
+    deeper_signals["issues"]["assigned_issues"] = assigned_count
+    deeper_signals["issues"]["comments_authored"] = comments_by_user
     
     # Process discussions
-    discussions_started = 0
-    discussion_comments_authored = 0
+    discussions = user_data.get("repositoryDiscussions", {}) or {}
+    discussion_nodes = discussions.get("nodes", []) or []
+    deeper_signals["discussions"]["total"] = discussions.get("totalCount", 0)
     
-    repo_discussions = user_data.get("repositoryDiscussions", {}) or {}
-    discussion_nodes = repo_discussions.get("nodes", []) or []
+    discussion_comments = 0
+    categories = set()
     
     for discussion in discussion_nodes:
         if not discussion or not isinstance(discussion, dict):
             continue
+            
         author = discussion.get("author", {}) or {}
         if author and author.get("login") == username:
-            discussions_started += 1
-            
+            deeper_signals["discussions"]["threads_started"] += 1
+        
+        # Track categories
+        category = discussion.get("category", {}) or {}
+        if category and category.get("name"):
+            categories.add(category["name"])
+        
+        # Count comments
         comments = discussion.get("comments", {}) or {}
         comment_nodes = comments.get("nodes", []) or []
         for comment in comment_nodes:
@@ -185,17 +398,23 @@ def _process_graphql_response(data: Dict[str, Any], username: str) -> Dict[str, 
                 continue
             comment_author = comment.get("author", {}) or {}
             if comment_author and comment_author.get("login") == username:
-                discussion_comments_authored += 1
+                discussion_comments += 1
+    
+    deeper_signals["discussions"]["comments_authored"] = discussion_comments
+    deeper_signals["discussions"]["categories_engaged"] = list(categories)
     
     # Process projects
-    projects_items_added = 0
+    projects = user_data.get("projectsV2", {}) or {}
+    project_nodes = projects.get("nodes", []) or []
+    deeper_signals["projects"]["total"] = projects.get("totalCount", 0)
     
-    projects_v2 = user_data.get("projectsV2", {}) or {}
-    project_nodes = projects_v2.get("nodes", []) or []
-    
+    items_added = 0
     for project in project_nodes:
         if not project or not isinstance(project, dict):
             continue
+            
+        deeper_signals["projects"]["projects_created"] += 1
+        
         items = project.get("items", {}) or {}
         item_nodes = items.get("nodes", []) or []
         for item in item_nodes:
@@ -203,29 +422,86 @@ def _process_graphql_response(data: Dict[str, Any], username: str) -> Dict[str, 
                 continue
             creator = item.get("creator", {}) or {}
             if creator and creator.get("login") == username:
-                projects_items_added += 1
+                items_added += 1
     
-    return {
-        "pr_reviews": {
-            "total": pr_reviews_total,
-            "approvals": pr_reviews_approved,
-            "request_changes": pr_reviews_changes_requested,
-            "approval_ratio": round(approval_ratio, 2)
-        },
-        "issues": {
-            "opened": issues_opened,
-            "closed_by_user": issues_closed_by_user,
-            "comments_authored": issue_comments_authored
-        },
-        "discussions": {
-            "threads_started": discussions_started,
-            "comments_authored": discussion_comments_authored
-        },
-        "projects": {
-            "items_added": projects_items_added
-        },
-        "sponsors_enabled": user_data.get("hasSponsorsListing", False)
-    }
+    deeper_signals["projects"]["items_added"] = items_added
+    
+    # Process social metrics
+    deeper_signals["social_metrics"]["followers"] = user_data.get("followers", {}).get("totalCount", 0)
+    deeper_signals["social_metrics"]["following"] = user_data.get("following", {}).get("totalCount", 0)
+    deeper_signals["social_metrics"]["starred_repos"] = user_data.get("starredRepositories", {}).get("totalCount", 0)
+    deeper_signals["social_metrics"]["watching"] = user_data.get("watching", {}).get("totalCount", 0)
+    deeper_signals["social_metrics"]["gists"] = user_data.get("gists", {}).get("totalCount", 0)
+    
+    # Process organizations
+    organizations = user_data.get("organizations", {}) or {}
+    org_nodes = organizations.get("nodes", []) or []
+    for org in org_nodes:
+        if org and isinstance(org, dict):
+            deeper_signals["social_metrics"]["organizations"].append({
+                "login": org.get("login"),
+                "name": org.get("name"),
+                "description": org.get("description"),
+            })
+    
+    # Process sponsorship
+    deeper_signals["sponsorship"]["sponsors_enabled"] = user_data.get("hasSponsorsListing", False)
+    deeper_signals["sponsorship"]["sponsoring_others"] = user_data.get("sponsorshipsAsSponsor", {}).get("totalCount", 0)
+    deeper_signals["sponsorship"]["sponsored_projects"] = user_data.get("sponsorshipsAsMaintainer", {}).get("totalCount", 0)
+    
+    # Calculate professional indicators
+    # Collaboration strength
+    total_interactions = (reviews_given + comments_by_user + discussion_comments)
+    if total_interactions > 100:
+        deeper_signals["professional_indicators"]["collaboration_strength"] = "Very High"
+    elif total_interactions > 50:
+        deeper_signals["professional_indicators"]["collaboration_strength"] = "High"
+    elif total_interactions > 20:
+        deeper_signals["professional_indicators"]["collaboration_strength"] = "Medium"
+    else:
+        deeper_signals["professional_indicators"]["collaboration_strength"] = "Low"
+    
+    # Community engagement
+    community_score = (
+        len(deeper_signals["social_metrics"]["organizations"]) * 3 +
+        deeper_signals["discussions"]["threads_started"] * 2 +
+        deeper_signals["sponsorship"]["sponsored_projects"] * 5 +
+        (1 if deeper_signals["sponsorship"]["sponsors_enabled"] else 0) * 3
+    )
+    
+    if community_score > 15:
+        deeper_signals["professional_indicators"]["community_engagement"] = "Very High"
+    elif community_score > 8:
+        deeper_signals["professional_indicators"]["community_engagement"] = "High"
+    elif community_score > 3:
+        deeper_signals["professional_indicators"]["community_engagement"] = "Medium"
+    else:
+        deeper_signals["professional_indicators"]["community_engagement"] = "Low"
+    
+    # Technical leadership
+    leadership_score = (
+        deeper_signals["pull_requests"]["reviews_given"] * 2 +
+        deeper_signals["projects"]["projects_created"] * 3 +
+        assigned_count * 1 +
+        deeper_signals["discussions"]["threads_started"] * 2
+    )
+    
+    if leadership_score > 30:
+        deeper_signals["professional_indicators"]["technical_leadership"] = "Very High"
+    elif leadership_score > 15:
+        deeper_signals["professional_indicators"]["technical_leadership"] = "High"
+    elif leadership_score > 5:
+        deeper_signals["professional_indicators"]["technical_leadership"] = "Medium"
+    else:
+        deeper_signals["professional_indicators"]["technical_leadership"] = "Low"
+    
+    # Consistency score (0-100)
+    total_contributions = deeper_signals["contributions"]["contribution_calendar"].get("total", 0)
+    if total_contributions > 0:
+        consistency_score = min(100, (total_contributions / 365) * 100)
+        deeper_signals["professional_indicators"]["consistency_score"] = round(consistency_score)
+    
+    return deeper_signals
 
 
 def collect(

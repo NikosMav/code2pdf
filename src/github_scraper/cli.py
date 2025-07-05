@@ -1,7 +1,11 @@
+#!/usr/bin/env python3
+"""CLI for GitHub scraper."""
+
 import typer
 from pathlib import Path
 from typing import Optional
 from datetime import datetime, timedelta
+import json
 
 from .github import fetch_profile
 from .generator import render_markdown
@@ -61,7 +65,13 @@ def build(
         False, "--include-deeper-signals", help="Include deeper GitHub signals (PR reviews, issues, discussions, projects)"
     ),
     full_profile: bool = typer.Option(
-        False, "--full-profile", help="Include all features: website enrichment + deeper signals"
+        False, "--full-profile", help="Include all features: website enrichment + deeper signals + LinkedIn"
+    ),
+    include_linkedin: bool = typer.Option(
+        False, "--include-linkedin", help="Include LinkedIn professional profile data (headline, education, certifications)"
+    ),
+    linkedin_url: Optional[str] = typer.Option(
+        None, "--linkedin-url", help="Manually specify LinkedIn profile URL (e.g., 'in/nikolaos-mavrapidis' or full URL)"
     ),
 ):
     """Build a professional CV from a GitHub profile with comprehensive data scraping and analysis."""
@@ -85,6 +95,7 @@ def build(
         if full_profile:
             enrich_websites = True
             include_deeper_signals = True
+            include_linkedin = True
             if verbose:
                 typer.echo("🚀 Full profile mode: enabling all features")
 
@@ -119,6 +130,27 @@ def build(
                 if verbose:
                     typer.echo(f"⚠️  Failed to collect deeper signals: {e}")
 
+        # Collect LinkedIn data if requested
+        if include_linkedin:
+            try:
+                from .plugins.linkedin_enrichment import collect
+                linkedin_data = collect(
+                    data,  # Pass the GitHub profile data
+                    use_cache=use_cache,
+                    verbose=verbose,
+                    manual_linkedin_url=linkedin_url  # Pass manual URL if provided
+                )
+                if linkedin_data:
+                    data["linkedin_enrichment"] = linkedin_data
+                    if verbose:
+                        typer.echo(f"🔗 Collected LinkedIn data: {linkedin_data.get('enrichment_summary', {}).get('headline', 'Profile found')}")
+            except ImportError as e:
+                if verbose:
+                    typer.echo(f"⚠️  LinkedIn enrichment plugin not available: {e}")
+            except Exception as e:
+                if verbose:
+                    typer.echo(f"⚠️  Failed to collect LinkedIn data: {e}")
+
         if verbose:
             typer.echo(f"📊 Found {len(data['repos'])} repositories")
             typer.echo(
@@ -151,7 +183,7 @@ def build(
             output_file = output_directory / f"{base_name}.md"
         else:
             # Default organized filename
-            base_name = f"{user}_comprehensive_cv"
+            base_name = f"{user}_cv"
             output_file = output_directory / f"{base_name}.md"
 
         # Generate markdown output
@@ -292,13 +324,6 @@ def doctor():
     else:
         typer.echo("❌ Jinja2: Missing")
 
-
-
-    if importlib.util.find_spec("yaml"):
-        typer.echo("✅ YAML config support: Available")
-    else:
-        typer.echo("⚠️  YAML config support: Not available (optional)")
-
     # Check cache directory
     from .github import CACHE_DIR
 
@@ -324,6 +349,12 @@ def doctor():
         )
     else:
         typer.echo("📁 Generated CVs: No output directory yet")
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

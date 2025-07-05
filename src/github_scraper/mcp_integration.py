@@ -60,41 +60,90 @@ def firecrawl_scrape_sync(
     Returns:
         Dictionary containing scraped data or None on failure
     """
+    result, _ = firecrawl_scrape_with_details(url, formats, onlyMainContent, waitFor, extract, timeout)
+    return result
+
+
+def firecrawl_scrape_with_details(
+    url: str,
+    formats: Optional[list] = None,
+    onlyMainContent: bool = True,
+    waitFor: int = 3000,
+    extract: Optional[Dict[str, Any]] = None,
+    timeout: int = 30,
+    mobile: bool = False,
+    retries: int = 2,
+) -> tuple[Optional[Dict[str, Any]], Optional[str]]:
+    """
+    Synchronously scrape a URL using the Firecrawl API with detailed error reporting.
+
+    Args:
+        url: The URL to scrape
+        formats: List of formats to extract (default: ["markdown", "extract"])
+        onlyMainContent: Whether to extract only main content
+        waitFor: Time to wait for dynamic content in milliseconds
+        extract: Configuration for structured data extraction
+        timeout: Request timeout in seconds
+
+    Returns:
+        Tuple of (scraped_data, error_details). scraped_data is None on failure.
+    """
     api_key = get_firecrawl_api_key()
+
+    if not api_key:
+        return None, "Firecrawl API key not found in environment variables"
 
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
     payload = create_firecrawl_request_payload(
         url, formats, onlyMainContent, waitFor, extract
     )
+    
+    # Add mobile view option
+    if mobile:
+        payload["mobile"] = True
 
-    try:
-        with httpx.Client(timeout=timeout) as client:
-            response = client.post(FIRECRAWL_BASE_URL, headers=headers, json=payload)
+    last_error = None
+    
+    for attempt in range(retries + 1):
+        try:
+            with httpx.Client(timeout=timeout) as client:
+                response = client.post(FIRECRAWL_BASE_URL, headers=headers, json=payload)
 
-            response.raise_for_status()
-            result = response.json()
+                response.raise_for_status()
+                result = response.json()
 
-            # Return the data section if it exists, otherwise the full response
-            return result.get("data", result)
+                # Check for Firecrawl-specific error responses
+                if result.get("success") is False:
+                    error_msg = result.get("error", "Unknown Firecrawl error")
+                    last_error = f"Firecrawl API error: {error_msg}"
+                    if attempt < retries:
+                        continue  # Retry
+                    return None, last_error
 
-    except httpx.TimeoutException:
-        # Handle timeout gracefully
-        return None
-    except httpx.HTTPStatusError as e:
-        # Handle HTTP errors gracefully
-        if e.response.status_code == 401:
-            # Invalid API key
-            return None
-        elif e.response.status_code == 429:
-            # Rate limit exceeded
-            return None
-        else:
-            # Other HTTP errors
-            return None
-    except Exception:
-        # Handle any other errors gracefully
-        return None
+                # Return the data section if it exists, otherwise the full response
+                return result.get("data", result), None
+
+        except Exception as e:
+            last_error = str(e)
+            if attempt < retries:
+                import time
+                time.sleep(2 * (attempt + 1))  # Progressive backoff
+                continue
+
+    # All retries failed
+    if "timeout" in str(last_error).lower():
+        return None, f"Request timed out after {timeout} seconds (tried {retries + 1} times)"
+    elif "401" in str(last_error):
+        return None, "Invalid or expired API key"
+    elif "429" in str(last_error):
+        return None, "Rate limit exceeded, try again later"
+    elif "403" in str(last_error):
+        return None, "Access forbidden (possibly blocked by target site)"
+    elif "404" in str(last_error):
+        return None, "URL not found"
+    else:
+        return None, f"Failed after {retries + 1} attempts: {last_error}"
 
 
 

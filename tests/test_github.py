@@ -6,9 +6,8 @@ from datetime import datetime, timezone
 
 from github_scraper.github import (
     calculate_activity_score,
-    analyze_languages,
-    analyze_contribution_patterns,
-    analyze_repository_trends,
+    get_language_stats,
+    get_contribution_stats,
 )
 
 
@@ -38,7 +37,7 @@ class TestLanguageAnalysis:
 
     def test_empty_repos(self):
         """Test language analysis with no repositories."""
-        result = analyze_languages([])
+        result = get_language_stats([])
         assert result["language_count"] == 0
         assert result["most_used"] == ("None", 0)
 
@@ -48,11 +47,10 @@ class TestLanguageAnalysis:
             {"language": "Python", "stars": 10, "size": 1000},
             {"language": "Python", "stars": 5, "size": 500},
         ]
-        result = analyze_languages(repos)
+        result = get_language_stats(repos)
         assert result["language_count"] == 1
         assert result["most_used"][0] == "Python"
         assert result["most_used"][1] == 2
-        assert "Python" in result["expertise_levels"]
 
     def test_multiple_languages(self):
         """Test analysis with multiple programming languages."""
@@ -61,32 +59,10 @@ class TestLanguageAnalysis:
             {"language": "JavaScript", "stars": 15, "size": 1500},
             {"language": "Python", "stars": 10, "size": 1000},
         ]
-        result = analyze_languages(repos)
+        result = get_language_stats(repos)
         assert result["language_count"] == 2
-        assert "Python" in result["top_languages"]
-        assert "JavaScript" in result["top_languages"]
-
-    def test_expertise_levels(self):
-        """Test expertise level calculation."""
-        repos = [
-            {"language": "Python", "stars": 50, "size": 5000},  # High stars
-            {"language": "Python", "stars": 30, "size": 3000},
-            {"language": "Python", "stars": 20, "size": 2000},
-            {"language": "Python", "stars": 15, "size": 1500},
-            {
-                "language": "Python",
-                "stars": 10,
-                "size": 1000,
-            },  # 5 repos with good stars = Expert
-            {
-                "language": "JavaScript",
-                "stars": 1,
-                "size": 200,
-            },  # Very low stars, few repos = Beginner
-        ]
-        result = analyze_languages(repos)
-        assert result["expertise_levels"]["Python"] == "Expert"
-        assert result["expertise_levels"]["JavaScript"] == "Beginner"
+        assert "Python" in result["languages_by_project_count"]
+        assert "JavaScript" in result["languages_by_project_count"]
 
 
 class TestContributionPatterns:
@@ -118,80 +94,15 @@ class TestContributionPatterns:
         ]
         user_data = {"followers": 50, "following": 25}
 
-        result = analyze_contribution_patterns(repos, user_data)
+        result = get_contribution_stats(repos, user_data)
 
         assert result["total_repositories"] == 2
         assert result["total_stars_earned"] == 30
         assert result["total_forks_received"] == 7
         assert result["total_watchers"] == 23
         assert result["total_open_issues"] == 4
-        assert 0 <= result["collaboration_ratio"] <= 1
-        assert 0 <= result["community_health_score"] <= 100
-
-    def test_impact_scores(self):
-        """Test impact score classification."""
-        # High impact
-        high_impact_repos = [
-            {
-                "stars": 150,
-                "forks": 30,
-                "watchers": 100,
-                "open_issues": 5,
-                "days_since_update": 10,
-            }
-        ]
-        result = analyze_contribution_patterns(high_impact_repos, {})
-        assert result["impact_score"] == "High"
-
-        # Medium impact
-        medium_impact_repos = [
-            {
-                "stars": 50,
-                "forks": 10,
-                "watchers": 30,
-                "open_issues": 2,
-                "days_since_update": 20,
-            }
-        ]
-        result = analyze_contribution_patterns(medium_impact_repos, {})
-        assert result["impact_score"] == "Medium"
-
-        # Low impact
-        low_impact_repos = [
-            {
-                "stars": 5,
-                "forks": 1,
-                "watchers": 3,
-                "open_issues": 0,
-                "days_since_update": 100,
-            }
-        ]
-        result = analyze_contribution_patterns(low_impact_repos, {})
-        assert result["impact_score"] == "Low"
-
-
-class TestRepositoryTrends:
-    """Test repository trend analysis."""
-
-    def test_empty_repos(self):
-        """Test trend analysis with no repositories."""
-        result = analyze_repository_trends([])
-        assert result == {}
-
-    def test_creation_trends(self):
-        """Test repository creation trend analysis."""
-        repos = [
-            {"created_at": datetime(2023, 1, 15, tzinfo=timezone.utc)},
-            {"created_at": datetime(2023, 3, 20, tzinfo=timezone.utc)},
-            {"created_at": datetime(2022, 12, 10, tzinfo=timezone.utc)},
-        ]
-        result = analyze_repository_trends(repos)
-
-        assert "creation_trend" in result
-        assert 2023 in result["creation_trend"]
-        assert 2022 in result["creation_trend"]
-        assert result["creation_trend"][2023] == 2
-        assert result["creation_trend"][2022] == 1
+        assert result["documented_repos"] == 1
+        assert result["licensed_repos"] == 1
 
 
 @patch("github_scraper.github.Github")

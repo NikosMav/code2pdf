@@ -4,20 +4,33 @@
 
 ### ✅ Added
 
+- **LinkedIn Professional Enrichment Plugin**: New plugin system for LinkedIn profile data extraction
+- **`--include-linkedin` Flag**: Extract professional headline, education, certifications, and work experience from LinkedIn
+- **Smart LinkedIn Discovery**: Automatically finds LinkedIn profiles from GitHub bio, blog field, and repository descriptions
+- **LinkedIn Data Templates**: Comprehensive template system for displaying LinkedIn professional data
+- **Multi-Source CV Integration**: Enhanced data correlation between GitHub, websites, and LinkedIn profiles
+- **Professional Archetype Enhancement**: Improved archetype analysis including formal education and certifications
+- **LinkedIn Caching System**: 24-hour cache TTL for LinkedIn profile data to optimize API usage
+- **Enhanced LinkedIn URL Detection**: Support for partial LinkedIn URLs (e.g., `in/username`) in addition to full URLs
+- **Comprehensive LinkedIn Tests**: Full test suite covering URL discovery, data extraction, and template rendering
 - **`--refresh` Flag**: Added `--refresh` flag as an alias for `--no-cache` to force fresh downloads
 - **Enhanced Cache Documentation**: Improved help text for cache-related flags with duration information
 - **Better Cache Control**: More intuitive cache bypass options for users
 - **Deeper GitHub Signals Plugin**: New plugin system with deeper GitHub analytics
 - **`--include-deeper-signals` Flag**: Collect PR reviews, issues, discussions, and project data
-- **`--full-profile` Flag**: Enable all features (website enrichment + deeper signals)
+- **`--full-profile` Flag**: Enable all features (website enrichment + deeper signals + LinkedIn)
 - **GraphQL API Integration**: Use GitHub GraphQL v4 API for advanced signal collection
 - **Advanced Community Analytics**: PR review analysis, issue engagement, and discussion metrics
 
 ### 🔄 Changed
 
+- **Multi-Source Data Integration**: Enhanced data source overview to include LinkedIn when available
+- **Professional Profile Metrics**: Updated analytics table to include LinkedIn education and certification data
+- **Template System**: Enhanced templates with LinkedIn professional data sections and data quality assessments
+- **CLI Help Text**: Updated `--full-profile` description to include LinkedIn enrichment
+- **Data Provenance**: Enhanced data source tracking and total data points calculation
 - **Cache Flag Help Text**: Updated `--cache/--no-cache` help text to include cache duration information
 - **Verbose Output**: Added informative messages when refresh mode is enabled
-- **Template System**: Enhanced templates with optional deeper signals section
 
 ### 🐛 Fixed
 
